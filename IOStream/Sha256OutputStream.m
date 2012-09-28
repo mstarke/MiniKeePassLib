@@ -15,18 +15,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#import <Foundation/Foundation.h>
-#import <CommonCrypto/CommonDigest.h>
-#import "OutputStream.h"
+#import "Sha256OutputStream.h"
 
-@interface Sha256OutputStream : OutputStream {
-    OutputStream *outputStream;
-    
-    CC_SHA256_CTX shaCtx;
-    uint8_t hash[32];
+@implementation Sha256OutputStream
+
+- (id)initWithOutputStream:(OutputStream *)stream {
+    self = [super init];
+    if (self) {
+        outputStream = [stream retain];
+        
+        CC_SHA256_Init(&shaCtx);
+    }
+    return self;
 }
 
-- (id)initWithOutputStream:(OutputStream*)stream;
-- (uint8_t*)getHash;
+- (void)dealloc {
+    [outputStream release];
+    [super dealloc];
+}
+
+- (NSUInteger)write:(const void *)bytes length:(NSUInteger)bytesLength {
+    CC_SHA256_Update(&shaCtx, bytes, bytesLength);
+    
+    return [outputStream write:bytes length:bytesLength];
+}
+
+- (void)close {
+    [outputStream close];
+    CC_SHA256_Final(hash, &shaCtx);
+}
+
+- (uint8_t*)getHash {
+    return hash;
+}
 
 @end

@@ -15,39 +15,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#import "Sha256OutputStream.h"
+#import "FileOutputStream.h"
 
-@implementation Sha256OutputStream
+@implementation FileOutputStream
 
-- (id)initWithOutputStream:(OutputStream*)stream {
+- (id)initWithFilename:(NSString*)filename flags:(NSUInteger)flags mode:(NSUInteger)mode {
     self = [super init];
     if (self) {
-        outputStream = [stream retain];
-        
-        CC_SHA256_Init(&shaCtx);
+        fd = open([filename UTF8String], flags, mode);
+        if (fd == -1) {
+            @throw [NSException exceptionWithName:@"IOException" reason:@"Failed to open file" userInfo:nil];
+        }
     }
     return self;
 }
 
 - (void)dealloc {
-    [outputStream release];
+    [self close];
     [super dealloc];
 }
 
 - (NSUInteger)write:(const void *)bytes length:(NSUInteger)bytesLength {
-    CC_SHA256_Update(&shaCtx, bytes, bytesLength);
-    
-    return [outputStream write:bytes length:bytesLength];
+    return write(fd, bytes, bytesLength);
+}
+
+- (NSInteger)seek:(NSUInteger)offset {
+    return lseek(fd, offset, SEEK_SET);
 }
 
 - (void)close {
-    [outputStream close];
-    
-    CC_SHA256_Final(hash, &shaCtx);
-}
-
-- (uint8_t*)getHash {
-    return hash;
+    if (fd == -1) {
+        return;
+    }
+    close(fd);
+    fd = -1;
 }
 
 @end

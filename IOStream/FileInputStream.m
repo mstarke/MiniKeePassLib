@@ -15,13 +15,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#import <Foundation/Foundation.h>
-#import "OutputStream.h"
+#import "FileInputStream.h"
 
-@interface FileOutputStream : OutputStream {
-    int fd;
+#include <fcntl.h>
+
+@implementation FileInputStream
+
+- (id)initWithFilename:(NSString*)filename {
+    self = [super init];
+    if (self) {
+        fd = open([filename UTF8String], O_RDONLY);
+        if (fd == -1) {
+            @throw [NSException exceptionWithName:@"IOException" reason:@"Failed to open file" userInfo:nil];
+        }
+    }
+    return self;
 }
 
-- (id)initWithFilename:(NSString*)filename;
+- (void)dealloc {
+    [self close];
+    [super dealloc];
+}
+
+- (NSUInteger)read:(void*)bytes length:(NSUInteger)bytesLength {
+    return read(fd, bytes, bytesLength);
+}
+
+- (NSInteger)seek:(NSUInteger)offset {
+    return lseek(fd, offset, SEEK_SET);
+}
+
+- (void)close {
+    if (fd == -1) {
+        return;
+    }
+    close(fd);
+    fd = -1;
+}
 
 @end
