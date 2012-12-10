@@ -8,6 +8,7 @@
 
 #import "Arc4RandomStream.h"
 #import <Security/Security.h>
+#import <Security/SecRandom.h>
 
 @interface Arc4RandomStream (PrivateMethods)
 - (void)updateState;
