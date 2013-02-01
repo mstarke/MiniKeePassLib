@@ -9,6 +9,7 @@
 #import "Salsa20RandomStream.h"
 #import <CommonCrypto/CommonDigest.h>
 #import <Security/Security.h>
+#import <Security/SecRandom.h>
 
 static uint32_t SIGMA[4] = {0x61707865, 0x3320646E, 0x79622D32, 0x6B206574};
 
