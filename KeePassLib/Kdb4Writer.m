@@ -90,9 +90,17 @@
     [stream close];
 
     // Write to the file
-    if (![outputStream.data writeToFile:filename options:NSDataWritingFileProtectionComplete error:nil]) {
-        @throw [NSException exceptionWithName:@"IOError" reason:@"Failed to write file" userInfo:nil];
-    }
+#ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
+  if (![outputStream.data writeToFile:filename options:NSDataWritingFileProtectionComplete error:nil]) {
+    @throw [NSException exceptionWithName:@"IOError" reason:@"Failed to write file" userInfo:nil];
+  }
+#endif
+#ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
+  if (![outputStream.data writeToFile:filename options:0 error:nil]) {
+    @throw [NSException exceptionWithName:@"IOError" reason:@"Failed to write file" userInfo:nil];
+  }
+
+#endif
 }
 
 - (void)writeHeaderField:(OutputStream*)outputStream headerId:(uint8_t)headerId data:(const void*)data length:(uint16_t)length {
