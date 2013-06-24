@@ -10,46 +10,24 @@
 
 @implementation KdbGroup
 
-@synthesize parent;
-@synthesize image;
-@synthesize name;
-@synthesize groups;
-@synthesize entries;
-@synthesize creationTime;
-@synthesize lastModificationTime;
-@synthesize lastAccessTime;
-@synthesize expiryTime;
-@synthesize canAddEntries;
-
 - (id)init {
     self = [super init];
     if (self) {
-        groups = [[NSMutableArray alloc] initWithCapacity:8];
-        entries = [[NSMutableArray alloc] initWithCapacity:16];
-        canAddEntries = YES;
+        _groups = [[NSMutableArray alloc] initWithCapacity:8];
+        _entries = [[NSMutableArray alloc] initWithCapacity:16];
+        _canAddEntries = YES;
     }
     return self;
 }
 
-- (void)dealloc {
-    [name release];
-    [groups release];
-    [entries release];
-    [creationTime release];
-    [lastModificationTime release];
-    [lastAccessTime release];
-    [expiryTime release];
-    [super dealloc];
-}
-
 - (void)addGroup:(KdbGroup *)group {
     group.parent = self;
-    [groups addObject:group];
+    [_groups addObject:group];
 }
 
 - (void)removeGroup:(KdbGroup *)group {
     group.parent = nil;
-    [groups removeObject:group];
+    [_groups removeObject:group];
 }
 
 - (void)moveGroup:(KdbGroup *)group toGroup:(KdbGroup *)toGroup {
@@ -59,12 +37,12 @@
 
 - (void)addEntry:(KdbEntry *)entry {
     entry.parent = self;
-    [entries addObject:entry];
+    [_entries addObject:entry];
 }
 
 - (void)removeEntry:(KdbEntry *)entry {
     entry.parent = nil;
-    [entries removeObject:entry];
+    [_entries removeObject:entry];
 }
 
 - (void)moveEntry:(KdbEntry *)entry toGroup:(KdbGroup *)toGroup {
@@ -78,7 +56,7 @@
         return YES;
     } else {
         // Check subgroups
-        for (KdbGroup *subGroup in groups) {
+        for (KdbGroup *subGroup in self.groups) {
             if ([subGroup containsGroup:group]) {
                 return YES;
             }
@@ -88,28 +66,19 @@
 }
 
 - (NSString*)description {
-    return [NSString stringWithFormat:@"KdbGroup [image=%ld, name=%@, creationTime=%@, lastModificationTime=%@, lastAccessTime=%@, expiryTime=%@]", image, name, creationTime, lastModificationTime, lastAccessTime, expiryTime];
+    return [NSString stringWithFormat:@"KdbGroup [image=%ld, name=%@, creationTime=%@, lastModificationTime=%@, lastAccessTime=%@, expiryTime=%@]",
+            _image,
+            _name,
+            _creationTime,
+            _lastModificationTime,
+            _lastAccessTime,
+            _expiryTime];
 }
 
 @end
 
 
 @implementation KdbEntry
-
-@synthesize parent;
-@synthesize image;
-@synthesize creationTime;
-@synthesize lastModificationTime;
-@synthesize lastAccessTime;
-@synthesize expiryTime;
-
-- (void)dealloc {
-    [creationTime release];
-    [lastModificationTime release];
-    [lastAccessTime release];
-    [expiryTime release];
-    [super dealloc];
-}
 
 - (NSString *)title {
     [self doesNotRecognizeSelector:_cmd];
@@ -157,20 +126,13 @@
 }
 
 - (NSString*)description {
-    return [NSString stringWithFormat:@"KdbEntry [image=%ld, title=%@, username=%@, password=%@, url=%@, notes=%@, creationTime=%@, lastModificationTime=%@, lastAccessTime=%@, expiryTime=%@]", image, self.title, self.username, self.password, self.url, self.notes, creationTime, lastModificationTime, lastAccessTime, expiryTime];
+    return [NSString stringWithFormat:@"KdbEntry [image=%ld, title=%@, username=%@, password=%@, url=%@, notes=%@, creationTime=%@, lastModificationTime=%@, lastAccessTime=%@, expiryTime=%@]", _image, self.title, self.username, self.password, self.url, self.notes, _creationTime, _lastModificationTime, _lastAccessTime, _expiryTime];
 }
 
 @end
 
 
 @implementation KdbTree
-
-@synthesize root;
-
-- (void)dealloc {
-    [root release];
-    [super dealloc];
-}
 
 - (KdbGroup*)createGroup:(KdbGroup*)parent {
     [self doesNotRecognizeSelector:_cmd];

@@ -7,6 +7,7 @@
 //
 
 #import "Kdb3Node.h"
+#import "Kdb.h"
 
 @implementation Kdb3Group
 
@@ -29,7 +30,7 @@
     if ([(Kdb3Entry *)entry isMeta]) {
         [_metaEntries addObject:entry];
     } else {
-        [entries addObject:entry];
+        [_entries addObject:entry];
     }
 }
 
@@ -39,7 +40,7 @@
     if ([(Kdb3Entry *)entry isMeta]) {
         [_metaEntries removeObject:entry];
     } else {
-        [entries removeObject:entry];
+        [_entries removeObject:entry];
     }
 }
 
@@ -79,7 +80,7 @@
     if (!_url || [_url compare:@"$"]) {
         return NO;
     }
-    if (image) {
+    if (self.image) {
         return NO;
     }
     return YES;
@@ -117,7 +118,7 @@
     
     do {
         group.groupId = random();
-    } while (![self isGroupIdUnique:(Kdb3Group*)root groupId:group.groupId]);
+    } while (![self isGroupIdUnique:(Kdb3Group*)self.root groupId:group.groupId]);
 
     return [group autorelease];
 }

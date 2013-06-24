@@ -13,19 +13,19 @@
 @class KdbEntry;
 
 @interface KdbGroup : NSObject {
-    KdbGroup *parent;
+    KdbGroup *_parent;
 
-    NSInteger image;
-    NSString *name;
-    NSMutableArray *groups;
-    NSMutableArray *entries;
+    NSInteger _image;
+    NSString *_name;
+    NSMutableArray *_groups;
+    NSMutableArray *_entries;
 
-    NSDate *creationTime;
-    NSDate *lastModificationTime;
-    NSDate *lastAccessTime;
-    NSDate *expiryTime;
+    NSDate *_creationTime;
+    NSDate *_lastModificationTime;
+    NSDate *_lastAccessTime;
+    NSDate *_expiryTime;
 
-    BOOL canAddEntries;
+    BOOL _canAddEntries;
 }
 
 @property(nonatomic, assign) KdbGroup *parent;
@@ -54,17 +54,7 @@
 
 @end
 
-@interface KdbEntry : NSObject {
-    KdbGroup *parent;
-
-    NSInteger image;
-
-    NSDate *creationTime;
-    NSDate *lastModificationTime;
-    NSDate *lastAccessTime;
-    NSDate *expiryTime;
-}
-
+@interface KdbEntry : NSObject 
 @property(nonatomic, assign) KdbGroup *parent;
 
 @property(nonatomic, assign) NSInteger image;
@@ -91,9 +81,7 @@
 
 @end
 
-@interface KdbTree : NSObject {
-    KdbGroup *root;
-}
+@interface KdbTree : NSObject
 
 @property(nonatomic, retain) KdbGroup *root;
 
