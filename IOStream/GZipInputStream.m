@@ -85,7 +85,7 @@
     do {
         // Check if we need more input data
         if (zstream.avail_in == 0) {
-            n = [inputStream read:inputBuffer length:GZIP_INPUT_BUFFERSIZE];
+            n = (int)[inputStream read:inputBuffer length:GZIP_INPUT_BUFFERSIZE];
             if (n <= 0) {
                 inflateEnd(&zstream);
                 @throw [NSException exceptionWithName:@"IOException" reason:@"Failed to read compressed data" userInfo:nil];

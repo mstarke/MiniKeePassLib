@@ -44,7 +44,7 @@
 
 - (NSUInteger)write:(const void *)bytes length:(NSUInteger)bytesLength {
     // Ensure the buffer has enough space to store the encrypted data
-    [self ensureBufferCapacity:CCCryptorGetOutputLength(cryptorRef, bytesLength, NO)];
+    [self ensureBufferCapacity:(uint32_t)CCCryptorGetOutputLength(cryptorRef, bytesLength, NO)];
     
     // Encrypt the data
     size_t n = 0;

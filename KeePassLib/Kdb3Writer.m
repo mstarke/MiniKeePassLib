@@ -7,20 +7,21 @@
 //
 
 #import "Kdb3Writer.h"
-#import "Kdb3Date.h"
 #import "Kdb3Utils.h"
 #import "KdbPassword.h"
 #import "FileOutputStream.h"
 #import "AesOutputStream.h"
 #import "Sha256OutputStream.h"
 #import "DataOutputStream.h"
-#import "Utils.h"
+#import "NSString+Empty.h"
+#import "NSData+Random.h"
+#import "NSDate+Packed.h"
 
 #define DEFAULT_BIN_SIZE (32*1024)
 
 @interface Kdb3Writer (PrivateMethods)
-- (uint32_t)numOfGroups:(Kdb3Group *)root;
-- (uint32_t)numOfEntries:(Kdb3Group *)root;
+- (NSUInteger)numOfGroups:(Kdb3Group *)root;
+- (NSUInteger)numOfEntries:(Kdb3Group *)root;
 - (void)writeHeader:(OutputStream *)outputStream withTree:(Kdb3Tree *)tree;
 - (void)writeGroups:(Kdb3Group *)root withOutputStream:(OutputStream *)outputStream;
 - (void)writeEntries:(Kdb3Group *)root withOutputStream:(OutputStream *)outputStream;
@@ -36,9 +37,9 @@
 - init {
     self = [super init];
     if (self) {
-        masterSeed = [[Utils randomBytes:16] retain];
-        encryptionIv = [[Utils randomBytes:16] retain];
-        transformSeed = [[Utils randomBytes:32] retain];
+        masterSeed = [[NSData dataWithRandomBytes:16] retain];
+        encryptionIv = [[NSData dataWithRandomBytes:16] retain];
+        transformSeed = [[NSData dataWithRandomBytes:32] retain];
         firstGroup = YES;
     }
     return self;
@@ -54,7 +55,7 @@
 /**
  * Get the number of groups in the KDB tree
  */
-- (uint32_t)numOfGroups:(Kdb3Group *)root {
+- (NSUInteger)numOfGroups:(Kdb3Group *)root {
     int num = 0;
     for (Kdb3Group *g in root.groups) {
         num += [self numOfGroups:g];
@@ -65,8 +66,8 @@
 /**
  * Get the number of entries and meta entries in the KDB tree
  */
-- (uint32_t)numOfEntries:(Kdb3Group *)root {
-    int num = [root.entries count] + [root.metaEntries count];
+- (NSUInteger)numOfEntries:(Kdb3Group *)root {
+    NSUInteger num = [root.entries count] + [root.metaEntries count];
     for (Kdb3Group *g in root.groups) {
         num += [self numOfEntries:g];
     }
@@ -142,10 +143,10 @@
     [encryptionIv getBytes:header.encryptionIv length:sizeof(header.encryptionIv)];
 
     // Number of groups (minus the root)
-    header.groups = CFSwapInt32HostToLittle([self numOfGroups:root] - 1);
+    header.groups = CFSwapInt32HostToLittle((uint32_t)[self numOfGroups:root] - 1);
 
     // Number of entries
-    header.entries = CFSwapInt32HostToLittle([self numOfEntries:root]);
+    header.entries = CFSwapInt32HostToLittle((uint32_t)[self numOfEntries:root]);
 
     // Skip the content hash for now, it will get filled in after the content is written
 
@@ -206,24 +207,24 @@
     tmp32 = CFSwapInt32HostToLittle(group.groupId);
     [self appendField:1 size:4 bytes:&tmp32 withOutputStream:outputStream];
 
-    if (![Utils emptyString:group.name]){
+    if (![group.name isEmpty]){
         const char * title = [group.name cStringUsingEncoding:NSUTF8StringEncoding];
         [self appendField:2 size:strlen(title)+1 bytes:(void *)title withOutputStream:outputStream];
     }
 
-    [Kdb3Date toPacked:group.creationTime bytes:packedDate];
+    [group.creationTime packToBytes:packedDate];
     [self appendField:3 size:5 bytes:packedDate withOutputStream:outputStream];
 
-    [Kdb3Date toPacked:group.lastModificationTime bytes:packedDate];
+    [group.lastModificationTime packToBytes:packedDate];
     [self appendField:4 size:5 bytes:packedDate withOutputStream:outputStream];
 
-    [Kdb3Date toPacked:group.lastAccessTime bytes:packedDate];
+    [group.lastAccessTime packToBytes:packedDate];
     [self appendField:5 size:5 bytes:packedDate withOutputStream:outputStream];
 
-    [Kdb3Date toPacked:group.expiryTime bytes:packedDate];
+    [group.expiryTime packToBytes:packedDate];
     [self appendField:6 size:5 bytes:packedDate withOutputStream:outputStream];
 
-    tmp32 = CFSwapInt32HostToLittle(group.image);
+    tmp32 = CFSwapInt32HostToLittle((uint32_t)group.image);
     [self appendField:7 size:4 bytes:&tmp32 withOutputStream:outputStream];
 
     // Get the level of the group
@@ -253,53 +254,53 @@
     tmp32 = CFSwapInt32HostToLittle(((Kdb3Group*)entry.parent).groupId);
     [self appendField:2 size:4 bytes:&tmp32 withOutputStream:outputStream];
 
-    tmp32 = CFSwapInt32HostToLittle(entry.image);
+    tmp32 = CFSwapInt32HostToLittle((uint32_t)entry.image);
     [self appendField:3 size:4 bytes:&tmp32 withOutputStream:outputStream];
 
     tmpStr = "";
-    if (![Utils emptyString:entry.title]) {
+    if (![entry.title isEmpty]) {
         tmpStr = [entry.title cStringUsingEncoding:NSUTF8StringEncoding];
     }
     [self appendField:4 size:strlen(tmpStr) + 1 bytes:tmpStr withOutputStream:outputStream];
 
     tmpStr = "";
-    if (![Utils emptyString:entry.url]) {
+    if (![entry.url isEmpty]) {
         tmpStr = [entry.url cStringUsingEncoding:NSUTF8StringEncoding];
     }
     [self appendField:5 size:strlen(tmpStr) + 1 bytes:tmpStr withOutputStream:outputStream];
 
     tmpStr = "";
-    if (![Utils emptyString:entry.username]) {
+    if (![entry.username isEmpty]) {
         tmpStr = [entry.username cStringUsingEncoding:NSUTF8StringEncoding];
     }
     [self appendField:6 size:strlen(tmpStr) + 1 bytes:tmpStr withOutputStream:outputStream];
 
     tmpStr = "";
-    if (![Utils emptyString:entry.password]) {
+    if (![entry.password isEmpty]) {
         tmpStr = [entry.password cStringUsingEncoding:NSUTF8StringEncoding];
     }
     [self appendField:7 size:strlen(tmpStr) + 1 bytes:tmpStr withOutputStream:outputStream];
 
     tmpStr = "";
-    if (![Utils emptyString:entry.notes]) {
+    if (![entry.notes isEmpty]) {
         tmpStr = [entry.notes cStringUsingEncoding:NSUTF8StringEncoding];
     }
     [self appendField:8 size:strlen(tmpStr) + 1 bytes:tmpStr withOutputStream:outputStream];
 
-    [Kdb3Date toPacked:entry.creationTime bytes:buffer];
+    [entry.creationTime packToBytes:buffer];
     [self appendField:9 size:5 bytes:buffer withOutputStream:outputStream];
 
-    [Kdb3Date toPacked:entry.lastModificationTime bytes:buffer];
+    [entry.lastModificationTime packToBytes:buffer];
     [self appendField:10 size:5 bytes:buffer withOutputStream:outputStream];
 
-    [Kdb3Date toPacked:entry.lastAccessTime bytes:buffer];
+    [entry.lastAccessTime packToBytes:buffer];
     [self appendField:11 size:5 bytes:buffer withOutputStream:outputStream];
 
-    [Kdb3Date toPacked:entry.expiryTime bytes:buffer];
+    [entry.expiryTime packToBytes:buffer];
     [self appendField:12 size:5 bytes:buffer withOutputStream:outputStream];
 
     tmpStr = "";
-    if (![Utils emptyString:entry.binaryDesc]) {
+    if (![entry.binaryDesc isEmpty]) {
         tmpStr = [entry.binaryDesc cStringUsingEncoding:NSUTF8StringEncoding];
     }
     [self appendField:13 size:strlen(tmpStr)+1 bytes:tmpStr withOutputStream:outputStream];
@@ -319,7 +320,7 @@
     [self appendField:1 size:32 bytes:headerHash.bytes withOutputStream:outputStream];
 
     // Generate some random data to prevent guessing attacks that use the content hash
-    NSData *randomData = [Utils randomBytes:32];
+    NSData *randomData = [NSData dataWithRandomBytes:32];
     [self appendField:2 size:32 bytes:randomData.bytes withOutputStream:outputStream];
 
     [self appendField:0xFFFF size:0 bytes:nil withOutputStream:outputStream];

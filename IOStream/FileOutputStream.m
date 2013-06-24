@@ -22,7 +22,7 @@
 - (id)initWithFilename:(NSString*)filename flags:(NSUInteger)flags mode:(NSUInteger)mode {
     self = [super init];
     if (self) {
-        fd = open([filename UTF8String], flags, mode);
+        fd = open([filename UTF8String], (int)flags, mode);
         if (fd == -1) {
             @throw [NSException exceptionWithName:@"IOException" reason:@"Failed to open file" userInfo:nil];
         }

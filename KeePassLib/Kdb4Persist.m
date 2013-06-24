@@ -89,15 +89,15 @@
     [element addChild:[DDXMLNode elementWithName:@"DefaultUserNameChanged"
                                      stringValue:[dateFormatter stringFromDate:tree.defaultUserNameChanged]]];
     [element addChild:[DDXMLNode elementWithName:@"MaintenanceHistoryDays"
-                                     stringValue:[NSString stringWithFormat:@"%d", tree.maintenanceHistoryDays]]];
+                                     stringValue:[NSString stringWithFormat:@"%ld", tree.maintenanceHistoryDays]]];
     [element addChild:[DDXMLNode elementWithName:@"Color"
                                      stringValue:tree.color]];
     [element addChild:[DDXMLNode elementWithName:@"MasterKeyChanged"
                                      stringValue:[dateFormatter stringFromDate:tree.masterKeyChanged]]];
     [element addChild:[DDXMLNode elementWithName:@"MasterKeyChangeRec"
-                                     stringValue:[NSString stringWithFormat:@"%d", tree.masterKeyChangeRec]]];
+                                     stringValue:[NSString stringWithFormat:@"%ld", tree.masterKeyChangeRec]]];
     [element addChild:[DDXMLNode elementWithName:@"MasterKeyChangeForce"
-                                     stringValue:[NSString stringWithFormat:@"%d", tree.masterKeyChangeForce]]];
+                                     stringValue:[NSString stringWithFormat:@"%ld", tree.masterKeyChangeForce]]];
 
     DDXMLElement *protectionElement = [DDXMLElement elementWithName:@"MemoryProtection"];
     [protectionElement addChild:[DDXMLNode elementWithName:@"ProtectTitle"

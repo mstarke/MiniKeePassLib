@@ -28,8 +28,8 @@
 
     CC_SHA256_CTX ctx;
     CC_SHA256_Init(&ctx);
-    CC_SHA256_Update(&ctx, buffer, startCount);
-    CC_SHA256_Update(&ctx, buffer + (sizeof(kdb3_header_t) - endCount), endCount);
+    CC_SHA256_Update(&ctx, buffer, (CC_LONG)startCount);
+    CC_SHA256_Update(&ctx, buffer + (sizeof(kdb3_header_t) - endCount), (CC_LONG)endCount);
     CC_SHA256_Final(hash, &ctx);
 
     return [NSData dataWithBytes:hash length:sizeof(hash)];

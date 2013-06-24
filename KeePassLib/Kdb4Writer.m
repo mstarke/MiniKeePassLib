@@ -25,7 +25,7 @@
 #import "GZipOutputStream.h"
 #import "Salsa20RandomStream.h"
 #import "UUID.h"
-#import "Utils.h"
+#import "NSData+Random.h"
 
 #define DEFAULT_BIN_SIZE (32*1024)
 
@@ -39,11 +39,11 @@
 - init {
     self = [super init];
     if (self) {
-        masterSeed = [[Utils randomBytes:32] retain];
-        transformSeed = [[Utils randomBytes:32] retain];
-        encryptionIv = [[Utils randomBytes:16] retain];
-        protectedStreamKey = [[Utils randomBytes:32] retain];
-        streamStartBytes = [[Utils randomBytes:32] retain];
+        masterSeed = [[NSData dataWithRandomBytes:32] retain];
+        transformSeed = [[NSData dataWithRandomBytes:32] retain];
+        encryptionIv = [[NSData dataWithRandomBytes:16] retain];
+        protectedStreamKey = [[NSData dataWithRandomBytes:32] retain];
+        streamStartBytes = [[NSData dataWithRandomBytes:32] retain];
     }
     return self;
 }

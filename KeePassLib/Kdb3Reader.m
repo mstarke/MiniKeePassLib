@@ -10,8 +10,8 @@
 #import "AesInputStream.h"
 #import "KdbPassword.h"
 #import "Kdb3Node.h"
-#import "Kdb3Date.h"
 #import "Kdb3Utils.h"
+#import "NSDate+Packed.h"
 
 @interface Kdb3Reader (privateMethods)
 - (void)readHeader:(InputStream *)inputStream;
@@ -160,22 +160,22 @@
 
                 case 0x0003:
                     [inputStream read:dateBuffer length:fieldSize];
-                    group.creationTime = [Kdb3Date fromPacked:dateBuffer];
+                    group.creationTime =  [NSDate dateFromPackedBytes:dateBuffer];
                     break;
 
                 case 0x0004:
                     [inputStream read:dateBuffer length:fieldSize];
-                    group.lastModificationTime = [Kdb3Date fromPacked:dateBuffer];
+                    group.lastModificationTime = [NSDate dateFromPackedBytes:dateBuffer];
                     break;
 
                 case 0x0005:
                     [inputStream read:dateBuffer length:fieldSize];
-                    group.lastAccessTime = [Kdb3Date fromPacked:dateBuffer];
+                    group.lastAccessTime = [NSDate dateFromPackedBytes:dateBuffer];
                     break;
 
                 case 0x0006:
                     [inputStream read:dateBuffer length:fieldSize];
-                    group.expiryTime = [Kdb3Date fromPacked:dateBuffer];
+                    group.expiryTime = [NSDate dateFromPackedBytes:dateBuffer];
                     break;
 
                 case 0x0007:
@@ -291,7 +291,7 @@
                         @throw [NSException exceptionWithName:@"IOException" reason:@"Invalid field size" userInfo:nil];
                     }
                     [inputStream read:buffer length:fieldSize];
-                    entry.creationTime = [Kdb3Date fromPacked:buffer];
+                    entry.creationTime = [NSDate dateFromPackedBytes:buffer];
                     break;
 
                 case 0x000A:
@@ -300,7 +300,7 @@
                         @throw [NSException exceptionWithName:@"IOException" reason:@"Invalid field size" userInfo:nil];
                     }
                     [inputStream read:buffer length:fieldSize];
-                    entry.lastModificationTime = [Kdb3Date fromPacked:buffer];
+                    entry.lastModificationTime = [NSDate dateFromPackedBytes:buffer];
                     break;
 
                 case 0x000B:
@@ -309,7 +309,7 @@
                         @throw [NSException exceptionWithName:@"IOException" reason:@"Invalid field size" userInfo:nil];
                     }
                     [inputStream read:buffer length:fieldSize];
-                    entry.lastAccessTime = [Kdb3Date fromPacked:buffer];
+                    entry.lastAccessTime = [NSDate dateFromPackedBytes:buffer];
                     break;
 
                 case 0x000C:
@@ -318,7 +318,7 @@
                         @throw [NSException exceptionWithName:@"IOException" reason:@"Invalid field size" userInfo:nil];
                     }
                     [inputStream read:buffer length:fieldSize];
-                    entry.expiryTime = [Kdb3Date fromPacked:buffer];
+                    entry.expiryTime = [NSDate dateFromPackedBytes:buffer];
                     break;
 
                 case 0x000D:

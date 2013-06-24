@@ -19,23 +19,21 @@
 
 @implementation DataOutputStream
 
-@synthesize data;
-
 - (id)init {
     self = [super init];
     if (self) {
-        data = [[NSMutableData alloc] init];
+        _data = [[NSMutableData alloc] init];
     }
     return self;
 }
 
 - (void)dealloc {
-    [data release];
+    [_data release];
     [super dealloc];
 }
 
 - (NSUInteger)write:(const void *)bytes length:(NSUInteger)bytesLength {
-    [data appendBytes:bytes length:bytesLength];
+    [_data appendBytes:bytes length:bytesLength];
     return bytesLength;
 }
 
