@@ -334,7 +334,7 @@
   }
 }
 
-- (void)newFile:(NSURL *)fileURL withPassword:(KdbPassword *)kdbPassword error:(NSError **)error {
+- (BOOL)newFile:(NSURL *)fileURL withPassword:(KdbPassword *)kdbPassword error:(NSError **)error {
   Kdb3Tree *tree = [[Kdb3Tree alloc] init];
   
   Kdb3Group *rootGroup = [[Kdb3Group alloc] init];
@@ -371,10 +371,12 @@
   group.image = 37;
   [parentGroup addGroup:group];
   
-  [self persist:tree fileURL:fileURL withPassword:kdbPassword error:error];
+  BOOL ok = [self persist:tree fileURL:fileURL withPassword:kdbPassword error:error];
   
   [tree release];
   [rootGroup release];
+
+  return ok;
 }
 
 @end

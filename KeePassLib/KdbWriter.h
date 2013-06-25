@@ -23,6 +23,6 @@
 
 @required
 - (BOOL)persist:(KdbTree *)tree fileURL:(NSURL *)fileURL withPassword:(KdbPassword *)kdbPassword error:(NSError **)error;
-- (void)newFile:(NSURL *)fileURL withPassword:(KdbPassword *)kdbPassword error:(NSError **)error;
+- (BOOL)newFile:(NSURL *)fileURL withPassword:(KdbPassword *)kdbPassword error:(NSError **)error;
 
 @end

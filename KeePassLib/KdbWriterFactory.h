@@ -21,6 +21,6 @@
 
 @interface KdbWriterFactory : NSObject
 
-+ (void)persist:(KdbTree *)tree fileURL:(NSURL *)fileURL withPassword:(KdbPassword *)kdbPassword error:(NSError **)error;
++ (BOOL)persist:(KdbTree *)tree fileURL:(NSURL *)fileURL withPassword:(KdbPassword *)kdbPassword error:(NSError **)error;
 
 @end

@@ -77,7 +77,8 @@ int closeCallback(void *context) {
   /* Close the stream */
   [inputStream close];
   DDXMLDocument *document = [[[DDXMLDocument alloc] initWithData:streamData options:0 error:error] autorelease];
-  
+  [streamData release];
+
   if(!document) {
     return nil;
   }

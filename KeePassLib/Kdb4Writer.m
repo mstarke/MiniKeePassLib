@@ -154,7 +154,7 @@
   [self writeHeaderField:outputStream headerId:HEADER_EOH data:buffer length:4];
 }
 
-- (void)newFile:(NSURL *)fileURL withPassword:(KdbPassword *)kdbPassword error:(NSError **)error {
+- (BOOL)newFile:(NSURL *)fileURL withPassword:(KdbPassword *)kdbPassword error:(NSError **)error {
 
   NSDate *currentTime = [NSDate date];
   
@@ -216,9 +216,10 @@
   group.image = 37;
   [parentGroup addGroup:group];
   
-  [self persist:tree fileURL:fileURL withPassword:kdbPassword error:error];
+  BOOL ok = [self persist:tree fileURL:fileURL withPassword:kdbPassword error:error];
   
   [tree release];
+  return ok;
 }
 
 @end

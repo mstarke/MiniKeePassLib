@@ -22,7 +22,7 @@
 
 @implementation KdbWriterFactory
 
-+ (void)persist:(KdbTree *)tree fileURL:(NSURL *)fileURL withPassword:(KdbPassword *)kdbPassword error:(NSError **)error {
++ (BOOL)persist:(KdbTree *)tree fileURL:(NSURL *)fileURL withPassword:(KdbPassword *)kdbPassword error:(NSError **)error {
   id<KdbWriter> writer;
   
   if([tree isKindOfClass:[Kdb3Tree class]]) {
@@ -34,7 +34,7 @@
   else {
     NSDictionary *userInfo = @{ NSLocalizedDescriptionKey : NSLocalizedStringFromTable( @"ERROR_TREE_CLASS_NOT_RECOGNIZED", @"Errors", @"Database is of unknown type" ) };
     *error = [NSError errorWithDomain:NSCocoaErrorDomain code:KPLErrorUnknownFileFormat userInfo:userInfo];
-    return;
+    return NO;
   }
   @try {
     [writer persist:tree fileURL:fileURL withPassword:kdbPassword error:error];
@@ -45,6 +45,7 @@
   }
   @finally {
     [writer release];
+    return (error != nil);
   }
 }
 
