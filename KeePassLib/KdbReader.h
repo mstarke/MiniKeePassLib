@@ -12,5 +12,11 @@
 #import "InputStream.h"
 
 @protocol KdbReader<NSObject>
+
+@required
 - (KdbTree*)load:(InputStream*)inputStream withPassword:(KdbPassword*)kdbPassword;
+
+@optional
+- (KdbTree *)load:(NSURL *)fileURL withPassword:(KdbPassword *)password error:(NSError **)error;
+
 @end

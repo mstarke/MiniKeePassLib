@@ -10,10 +10,9 @@
 #import "Kdb.h"
 #import "KdbPassword.h"
 
-@interface KdbReaderFactory : NSObject {
-
-}
+@interface KdbReaderFactory : NSObject
 
 + (KdbTree*)load:(NSString*)filename withPassword:(KdbPassword*)kdbPassword;
++ (KdbTree *)load:(NSURL *)fileURL withPassword:(KdbPassword *)password error:(NSError **)error;
 
 @end

@@ -35,7 +35,7 @@ static uint32_t SIGMA[4] = {0x61707865, 0x3320646E, 0x79622D32, 0x6B206574};
     self = [super init];
     if (self) {
         uint8_t key32[32];
-        CC_SHA256(key.bytes, key.length, key32);
+        CC_SHA256(key.bytes, (CC_LONG)key.length, key32);
         [self setKey:key32];
         
         uint8_t iv[] = {0xE8, 0x30, 0x09, 0x4B, 0x97, 0x20, 0x5D, 0x2A};

@@ -27,7 +27,6 @@
 - (NSData*)loadKeyFileV4:(NSURL *)fileURL;
 
 - (NSData*)loadXmlKeyFile:(NSURL *)fileURL;
-- (NSData*)loadHashKeyFile:(NSFileHandle*)fh;
 @end
 
 int hex2dec(char c);
@@ -76,7 +75,7 @@ int hex2dec(char c);
   uint8_t finalKey[32];
   CC_SHA256_CTX ctx;
   CC_SHA256_Init(&ctx);
-  CC_SHA256_Update(&ctx, masterSeed.bytes, masterSeed.length);
+  CC_SHA256_Update(&ctx, masterSeed.bytes, (CC_LONG)masterSeed.length);
   CC_SHA256_Update(&ctx, transformedKey, 32);
   CC_SHA256_Final(finalKey, &ctx);
   
@@ -87,7 +86,7 @@ int hex2dec(char c);
   if (_password != nil && _keyFileURL == nil) {
     // Hash the password into the master key
     NSData *passwordData = [_password dataUsingEncoding:_passwordEncoding];
-    CC_SHA256(passwordData.bytes, passwordData.length, masterKey);
+    CC_SHA256(passwordData.bytes, (CC_LONG)passwordData.length, masterKey);
   } else if (_password == nil && _keyFileURL != nil) {
     // Get the bytes from the keyfile
     NSData *keyFileData = [self loadKeyFileV3:_keyFileURL];
@@ -100,7 +99,7 @@ int hex2dec(char c);
     // Hash the password
     uint8_t passwordHash[32];
     NSData *passwordData = [_password dataUsingEncoding:_passwordEncoding];
-    CC_SHA256(passwordData.bytes, passwordData.length, passwordHash);
+    CC_SHA256(passwordData.bytes, (CC_LONG)passwordData.length, passwordHash);
     
     // Get the bytes from the keyfile
     NSData *keyFileData = [self loadKeyFileV3:_keyFileURL];
@@ -129,7 +128,7 @@ int hex2dec(char c);
     
     // Hash the password
     uint8_t hash[32];
-    CC_SHA256(passwordData.bytes, passwordData.length, hash);
+    CC_SHA256(passwordData.bytes, (CC_LONG)passwordData.length, hash);
     
     // Add the password hash to the master hash
     CC_SHA256_Update(&ctx, hash, 32);
@@ -144,7 +143,7 @@ int hex2dec(char c);
     }
     
     // Add the keyfile hash to the master hash
-    CC_SHA256_Update(&ctx, keyFileData.bytes, keyFileData.length);
+    CC_SHA256_Update(&ctx, keyFileData.bytes, (CC_LONG)keyFileData.length);
   }
   
   // Finish the hash into the master key
@@ -170,20 +169,17 @@ int hex2dec(char c);
   }
   
   if ([fileData length] == 64) {
-    NSStringEncoding encoding;
     error = nil;
-    NSString *hexstring = [NSString stringWithContentsOfURL:fileURL usedEncoding:&encoding error:&error];
+    NSString *hexstring = [[NSString alloc] initWithData:fileData encoding:NSUTF8StringEncoding];
     if(!error && hexstring != nil) {
       fileData = [self keyDataWithHexString:hexstring];
     }
+    [hexstring release];
   }
-  /*
-   if (data == nil) {
-   // The hex encoded file failed to load, so try and hash the file
-   [fh seekToFileOffset:0];
-   data = [self loadHashKeyFile:fh];
-   }
-   */
+  if(!fileData) {
+    // The hex encoded file failed to load, so try and hash the file
+    fileData = [self keyDataFromHash:fileData];
+  }
   return fileData;
 }
 
@@ -263,24 +259,41 @@ int hex2dec(char c);
   return [NSData dataWithBytes:buffer length:32];
 }
 
-- (NSData*)loadHashKeyFile:(NSFileHandle*)fh {
+- (NSData *)keyDataFromHash:(NSData *)fileData {
   uint8_t buffer[32];
-  NSData *data;
+  NSData *chunk;
   
   CC_SHA256_CTX ctx;
   CC_SHA256_Init(&ctx);
-  
-  while (TRUE) {
-    data = [fh readDataOfLength:2048];
-    if (data.length == 0) {
-      break;
+  @autoreleasepool {
+    for(NSUInteger iIndex = 0; iIndex < ([fileData length] - 2048); iIndex += 2048) {
+      chunk = [fileData subdataWithRange:NSMakeRange(0, 2048)];
+      CC_SHA256_Update(&ctx, chunk.bytes, (CC_LONG)chunk.length);
     }
-    CC_SHA256_Update(&ctx, data.bytes, data.length);
   }
-  
   CC_SHA256_Final(buffer, &ctx);
   
   return [NSData dataWithBytes:buffer length:32];
 }
+
+//- (NSData*)loadHashKeyFile:(NSFileHandle*)fh {
+//  uint8_t buffer[32];
+//  NSData *data;
+//  
+//  CC_SHA256_CTX ctx;
+//  CC_SHA256_Init(&ctx);
+//  
+//  while (TRUE) {
+//    data = [fh readDataOfLength:2048];
+//    if (data.length == 0) {
+//      break;
+//    }
+//    CC_SHA256_Update(&ctx, data.bytes, data.length);
+//  }
+//  
+//  CC_SHA256_Final(buffer, &ctx);
+//  
+//  return [NSData dataWithBytes:buffer length:32];
+//}
 
 @end

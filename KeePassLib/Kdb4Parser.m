@@ -19,7 +19,6 @@
 #import "Kdb4Node.h"
 #import "DDXML.h"
 #import "DDXMLElementAdditions.h"
-#import "DDXMLDocument+MKPAdditions.h"
 #import "NSMutableData+Base64.h"
 
 @interface Kdb4Parser (PrivateMethods)
@@ -57,19 +56,30 @@
 
 int	readCallback(void *context, char *buffer, int len) {
   InputStream *inputStream = (InputStream*)context;
-  return [inputStream read:buffer length:len];
+  return (int)[inputStream read:buffer length:len];
 }
 
 int closeCallback(void *context) {
   return 0;
 }
 
-- (Kdb4Tree *)parse:(InputStream *)inputStream {
-  DDXMLDocument *document = [[[DDXMLDocument alloc] initWithReadIO:readCallback
-                                                           closeIO:closeCallback
-                                                           context:inputStream
-                                                           options:0
-                                                             error:nil] autorelease];
+- (Kdb4Tree *)parse:(InputStream *)inputStream {  
+  NSMutableData *streamData = [[NSMutableData alloc] init];
+  while(YES) {
+    uint8_t bytes[32];
+    NSUInteger iLenght = [inputStream read:bytes length:32];
+    if(iLenght == 0) {
+      break;
+    }
+    [streamData appendBytes:bytes length:iLenght];
+  }
+  NSError *error = nil;
+  DDXMLDocument *document = [[[DDXMLDocument alloc] initWithData:streamData options:0 error:nil] autorelease];
+  
+  if(error) {
+    NSLog(@"%@", [error localizedDescription]);
+  }
+  
   if (document == nil) {
     @throw [NSException exceptionWithName:@"ParseError" reason:@"Failed to parse database" userInfo:nil];
   }

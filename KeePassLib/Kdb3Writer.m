@@ -198,7 +198,7 @@
         [dataOutputStream close];
 
         // Write the extra data to a field with id 0
-        [self appendField:0 size:dataOutputStream.data.length bytes:dataOutputStream.data.bytes withOutputStream:outputStream];
+        [self appendField:0 size:(uint32_t)dataOutputStream.data.length bytes:dataOutputStream.data.bytes withOutputStream:outputStream];
 
         [dataOutputStream release];
         firstGroup = NO;
@@ -209,7 +209,7 @@
 
     if (![group.name isEmpty]){
         const char * title = [group.name cStringUsingEncoding:NSUTF8StringEncoding];
-        [self appendField:2 size:strlen(title)+1 bytes:(void *)title withOutputStream:outputStream];
+        [self appendField:2 size:(uint32_t)(strlen(title)+1) bytes:(void *)title withOutputStream:outputStream];
     }
 
     [group.creationTime packToBytes:packedDate];
@@ -261,31 +261,31 @@
     if (![entry.title isEmpty]) {
         tmpStr = [entry.title cStringUsingEncoding:NSUTF8StringEncoding];
     }
-    [self appendField:4 size:strlen(tmpStr) + 1 bytes:tmpStr withOutputStream:outputStream];
+    [self appendField:4 size:(uint32_t)(strlen(tmpStr) + 1) bytes:tmpStr withOutputStream:outputStream];
 
     tmpStr = "";
     if (![entry.url isEmpty]) {
         tmpStr = [entry.url cStringUsingEncoding:NSUTF8StringEncoding];
     }
-    [self appendField:5 size:strlen(tmpStr) + 1 bytes:tmpStr withOutputStream:outputStream];
+    [self appendField:5 size:(uint32_t)(strlen(tmpStr) + 1) bytes:tmpStr withOutputStream:outputStream];
 
     tmpStr = "";
     if (![entry.username isEmpty]) {
         tmpStr = [entry.username cStringUsingEncoding:NSUTF8StringEncoding];
     }
-    [self appendField:6 size:strlen(tmpStr) + 1 bytes:tmpStr withOutputStream:outputStream];
+    [self appendField:6 size:(uint32_t)(strlen(tmpStr) + 1) bytes:tmpStr withOutputStream:outputStream];
 
     tmpStr = "";
     if (![entry.password isEmpty]) {
         tmpStr = [entry.password cStringUsingEncoding:NSUTF8StringEncoding];
     }
-    [self appendField:7 size:strlen(tmpStr) + 1 bytes:tmpStr withOutputStream:outputStream];
+    [self appendField:7 size:(uint32_t)(strlen(tmpStr) + 1) bytes:tmpStr withOutputStream:outputStream];
 
     tmpStr = "";
     if (![entry.notes isEmpty]) {
         tmpStr = [entry.notes cStringUsingEncoding:NSUTF8StringEncoding];
     }
-    [self appendField:8 size:strlen(tmpStr) + 1 bytes:tmpStr withOutputStream:outputStream];
+    [self appendField:8 size:(uint32_t)(strlen(tmpStr) + 1) bytes:tmpStr withOutputStream:outputStream];
 
     [entry.creationTime packToBytes:buffer];
     [self appendField:9 size:5 bytes:buffer withOutputStream:outputStream];
@@ -303,10 +303,10 @@
     if (![entry.binaryDesc isEmpty]) {
         tmpStr = [entry.binaryDesc cStringUsingEncoding:NSUTF8StringEncoding];
     }
-    [self appendField:13 size:strlen(tmpStr)+1 bytes:tmpStr withOutputStream:outputStream];
+    [self appendField:13 size:(uint32_t)(strlen(tmpStr) + 1) bytes:tmpStr withOutputStream:outputStream];
 
     if (entry.binary && entry.binary.length) {
-        [self appendField:14 size:entry.binary.length bytes:entry.binary.bytes withOutputStream:outputStream];
+        [self appendField:14 size:(uint32_t)entry.binary.length bytes:entry.binary.bytes withOutputStream:outputStream];
     } else {
         [self appendField:14 size:0 bytes:nil withOutputStream:outputStream];
     }

@@ -43,4 +43,9 @@
     return tree;
 }
 
++ (KdbTree *)load:(NSURL *)fileURL withPassword:(KdbPassword *)password error:(NSError **)error {
+  NSAssert(NO, @"Not implemented");
+  return nil;
+}
+
 @end
