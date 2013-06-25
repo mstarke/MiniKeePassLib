@@ -11,11 +11,9 @@
 @implementation DDXMLElement (MKPAdditions)
 
 - (void)removeChild:(DDXMLNode *)child {
-    int idx = [child index];
-
-    if (idx >= 0) {
-        [self removeChildAtIndex:idx];
-    }
+  NSUInteger idx = [child index];
+  NSAssert(idx >= 0, @"Index needs to be always positive");
+  [self removeChildAtIndex:idx];
 }
 
 @end
