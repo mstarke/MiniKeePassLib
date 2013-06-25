@@ -37,59 +37,59 @@
 @implementation Kdb4Writer
 
 - init {
-    self = [super init];
-    if (self) {
-        masterSeed = [[NSData dataWithRandomBytes:32] retain];
-        transformSeed = [[NSData dataWithRandomBytes:32] retain];
-        encryptionIv = [[NSData dataWithRandomBytes:16] retain];
-        protectedStreamKey = [[NSData dataWithRandomBytes:32] retain];
-        streamStartBytes = [[NSData dataWithRandomBytes:32] retain];
-    }
-    return self;
+  self = [super init];
+  if (self) {
+    masterSeed = [[NSData dataWithRandomBytes:32] retain];
+    transformSeed = [[NSData dataWithRandomBytes:32] retain];
+    encryptionIv = [[NSData dataWithRandomBytes:16] retain];
+    protectedStreamKey = [[NSData dataWithRandomBytes:32] retain];
+    streamStartBytes = [[NSData dataWithRandomBytes:32] retain];
+  }
+  return self;
 }
 
 - (void)dealloc {
-    [masterSeed release];
-    [transformSeed release];
-    [encryptionIv release];
-    [protectedStreamKey release];
-    [streamStartBytes release];
-    [super dealloc];
+  [masterSeed release];
+  [transformSeed release];
+  [encryptionIv release];
+  [protectedStreamKey release];
+  [streamStartBytes release];
+  [super dealloc];
 }
 
 - (void)persist:(Kdb4Tree*)tree file:(NSString*)filename withPassword:(KdbPassword*)kdbPassword {
-    // Configure the output stream
-    DataOutputStream *outputStream = [[[DataOutputStream alloc] init] autorelease];
-    
-    // Write the header
-    [self writeHeader:outputStream withTree:tree];
-    
-    // Create the encryption output stream
-    NSData *key = [kdbPassword createFinalKeyForVersion:4 masterSeed:masterSeed transformSeed:transformSeed rounds:tree.rounds];
-    AesOutputStream *aesOutputStream = [[[AesOutputStream alloc] initWithOutputStream:outputStream key:key iv:encryptionIv] autorelease];
-    
-    // Write the stream start bytes
-    [aesOutputStream write:streamStartBytes];
-    
-    // Create the hashed output stream
-    OutputStream *stream = [[[HashedOutputStream alloc] initWithOutputStream:aesOutputStream blockSize:1024*1024] autorelease];
-    
-    // Create the gzip output stream
-    if (tree.compressionAlgorithm == COMPRESSION_GZIP) {
-        stream = [[[GZipOutputStream alloc] initWithOutputStream:stream] autorelease];
-    }
-    
-    // Create the random stream
-    RandomStream *randomStream = [[[Salsa20RandomStream alloc] init:protectedStreamKey] autorelease];
-    
-    // Serialize the XML
-    Kdb4Persist *persist = [[[Kdb4Persist alloc] initWithTree:tree outputStream:stream randomStream:randomStream] autorelease];
-    [persist persist];
-    
-    // Close the output stream
-    [stream close];
-
-    // Write to the file
+  // Configure the output stream
+  DataOutputStream *outputStream = [[[DataOutputStream alloc] init] autorelease];
+  
+  // Write the header
+  [self writeHeader:outputStream withTree:tree];
+  
+  // Create the encryption output stream
+  NSData *key = [kdbPassword createFinalKeyForVersion:4 masterSeed:masterSeed transformSeed:transformSeed rounds:tree.rounds];
+  AesOutputStream *aesOutputStream = [[[AesOutputStream alloc] initWithOutputStream:outputStream key:key iv:encryptionIv] autorelease];
+  
+  // Write the stream start bytes
+  [aesOutputStream write:streamStartBytes];
+  
+  // Create the hashed output stream
+  OutputStream *stream = [[[HashedOutputStream alloc] initWithOutputStream:aesOutputStream blockSize:1024*1024] autorelease];
+  
+  // Create the gzip output stream
+  if (tree.compressionAlgorithm == COMPRESSION_GZIP) {
+    stream = [[[GZipOutputStream alloc] initWithOutputStream:stream] autorelease];
+  }
+  
+  // Create the random stream
+  RandomStream *randomStream = [[[Salsa20RandomStream alloc] init:protectedStreamKey] autorelease];
+  
+  // Serialize the XML
+  Kdb4Persist *persist = [[[Kdb4Persist alloc] initWithTree:tree outputStream:stream randomStream:randomStream] autorelease];
+  [persist persist];
+  
+  // Close the output stream
+  [stream close];
+  
+  // Write to the file
 #ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
   if (![outputStream.data writeToFile:filename options:NSDataWritingFileProtectionComplete error:nil]) {
     @throw [NSException exceptionWithName:@"IOError" reason:@"Failed to write file" userInfo:nil];
@@ -99,124 +99,124 @@
   if (![outputStream.data writeToFile:filename options:0 error:nil]) {
     @throw [NSException exceptionWithName:@"IOError" reason:@"Failed to write file" userInfo:nil];
   }
-
+  
 #endif
 }
 
 - (void)writeHeaderField:(OutputStream*)outputStream headerId:(uint8_t)headerId data:(const void*)data length:(uint16_t)length {
-    [outputStream writeInt8:headerId];
-    
-    [outputStream writeInt16:CFSwapInt16HostToLittle(length)];
-    
-    if (length > 0) {
-        [outputStream write:data length:length];
-    }
+  [outputStream writeInt8:headerId];
+  
+  [outputStream writeInt16:CFSwapInt16HostToLittle(length)];
+  
+  if (length > 0) {
+    [outputStream write:data length:length];
+  }
 }
 
 - (void)writeHeader:(OutputStream*)outputStream withTree:(Kdb4Tree*)tree {
-    uint8_t buffer[16];
-    uint32_t i32;
-    uint64_t i64;
-    
-    // Signature and version
-    [outputStream writeInt32:CFSwapInt32HostToLittle(KDB4_SIG1)];
-    [outputStream writeInt32:CFSwapInt32HostToLittle(KDB4_SIG2)];
-    [outputStream writeInt32:CFSwapInt32HostToLittle(KDB4_VERSION)];
-    
-    UUID *cipherUuid = [UUID getAESUUID];
-    [cipherUuid getBytes:buffer length:16];
-    [self writeHeaderField:outputStream headerId:HEADER_CIPHERID data:buffer length:16];
-    
-    i32 = CFSwapInt32HostToLittle(tree.compressionAlgorithm);
-    [self writeHeaderField:outputStream headerId:HEADER_COMPRESSION data:&i32 length:4];
-    
-    [self writeHeaderField:outputStream headerId:HEADER_MASTERSEED data:masterSeed.bytes length:masterSeed.length];
-    
-    [self writeHeaderField:outputStream headerId:HEADER_TRANSFORMSEED data:transformSeed.bytes length:transformSeed.length];
-    
-    i64 = CFSwapInt64HostToLittle(tree.rounds);
-    [self writeHeaderField:outputStream headerId:HEADER_TRANSFORMROUNDS data:&i64 length:8];
-    
-    [self writeHeaderField:outputStream headerId:HEADER_ENCRYPTIONIV data:encryptionIv.bytes length:encryptionIv.length];
-    
-    [self writeHeaderField:outputStream headerId:HEADER_PROTECTEDKEY data:protectedStreamKey.bytes length:protectedStreamKey.length];
-    
-    [self writeHeaderField:outputStream headerId:HEADER_STARTBYTES data:streamStartBytes.bytes length:streamStartBytes.length];
-    
-    i32 = CFSwapInt32HostToLittle(CSR_SALSA20);
-    [self writeHeaderField:outputStream headerId:HEADER_RANDOMSTREAMID data:&i32 length:4];
-    
-    buffer[0] = '\r';
-    buffer[1] = '\n';
-    buffer[2] = '\r';
-    buffer[3] = '\n';
-    [self writeHeaderField:outputStream headerId:HEADER_EOH data:buffer length:4];
+  uint8_t buffer[16];
+  uint32_t i32;
+  uint64_t i64;
+  
+  // Signature and version
+  [outputStream writeInt32:CFSwapInt32HostToLittle(KDB4_SIG1)];
+  [outputStream writeInt32:CFSwapInt32HostToLittle(KDB4_SIG2)];
+  [outputStream writeInt32:CFSwapInt32HostToLittle(KDB4_VERSION)];
+  
+  UUID *cipherUuid = [UUID getAESUUID];
+  [cipherUuid getBytes:buffer length:16];
+  [self writeHeaderField:outputStream headerId:HEADER_CIPHERID data:buffer length:16];
+  
+  i32 = CFSwapInt32HostToLittle(tree.compressionAlgorithm);
+  [self writeHeaderField:outputStream headerId:HEADER_COMPRESSION data:&i32 length:4];
+  
+  [self writeHeaderField:outputStream headerId:HEADER_MASTERSEED data:masterSeed.bytes length:masterSeed.length];
+  
+  [self writeHeaderField:outputStream headerId:HEADER_TRANSFORMSEED data:transformSeed.bytes length:transformSeed.length];
+  
+  i64 = CFSwapInt64HostToLittle(tree.rounds);
+  [self writeHeaderField:outputStream headerId:HEADER_TRANSFORMROUNDS data:&i64 length:8];
+  
+  [self writeHeaderField:outputStream headerId:HEADER_ENCRYPTIONIV data:encryptionIv.bytes length:encryptionIv.length];
+  
+  [self writeHeaderField:outputStream headerId:HEADER_PROTECTEDKEY data:protectedStreamKey.bytes length:protectedStreamKey.length];
+  
+  [self writeHeaderField:outputStream headerId:HEADER_STARTBYTES data:streamStartBytes.bytes length:streamStartBytes.length];
+  
+  i32 = CFSwapInt32HostToLittle(CSR_SALSA20);
+  [self writeHeaderField:outputStream headerId:HEADER_RANDOMSTREAMID data:&i32 length:4];
+  
+  buffer[0] = '\r';
+  buffer[1] = '\n';
+  buffer[2] = '\r';
+  buffer[3] = '\n';
+  [self writeHeaderField:outputStream headerId:HEADER_EOH data:buffer length:4];
 }
 
 - (void)newFile:(NSString*)fileName withPassword:(KdbPassword*)kdbPassword {
-    NSDate *currentTime = [NSDate date];
-
-    Kdb4Tree *tree = [[Kdb4Tree alloc] init];
-    tree.generator = @"MiniKeePass";
-    tree.databaseName = @"";
-    tree.databaseNameChanged = currentTime;
-    tree.databaseDescription = @"";
-    tree.databaseDescriptionChanged = currentTime;
-    tree.defaultUserName = @"";
-    tree.defaultUserNameChanged = currentTime;
-    tree.maintenanceHistoryDays = 365;
-    tree.color = @"";
-    tree.masterKeyChanged = currentTime;
-    tree.masterKeyChangeRec = -1;
-    tree.masterKeyChangeForce = -1;
-    tree.protectTitle = NO;
-    tree.protectUserName = NO;
-    tree.protectPassword = YES;
-    tree.protectUrl = NO;
-    tree.protectNotes = NO;
-    tree.recycleBinEnabled = YES;
-    tree.recycleBinUuid = [UUID nullUuid];
-    tree.recycleBinChanged = currentTime;
-    tree.entryTemplatesGroup = [UUID nullUuid];
-    tree.entryTemplatesGroupChanged = currentTime;
-    tree.historyMaxItems = 10;
-    tree.historyMaxSize = 6 * 1024 * 1024; // 6 MB
-    tree.lastSelectedGroup = [UUID nullUuid];
-    tree.lastTopVisibleGroup = [UUID nullUuid];
-
-    KdbGroup *parentGroup = [tree createGroup:nil];
-    parentGroup.name = @"General";
-    parentGroup.image = 48;
-    tree.root = parentGroup;
-    
-    KdbGroup *group = [tree createGroup:parentGroup];
-    group.name = @"Windows";
-    group.image = 38;
-    [parentGroup addGroup:group];
-    
-    group = [tree createGroup:parentGroup];
-    group.name = @"Network";
-    group.image = 3;
-    [parentGroup addGroup:group];
-
-    group = [tree createGroup:parentGroup];
-    group.name = @"Internet";
-    group.image = 1;
-    [parentGroup addGroup:group];
-
-    group = [tree createGroup:parentGroup];
-    group.name = @"eMail";
-    group.image = 19;
-    [parentGroup addGroup:group];
-
-    group = [tree createGroup:parentGroup];
-    group.name = @"Homebanking";
-    group.image = 37;
-    [parentGroup addGroup:group];
-
-    [self persist:tree file:fileName withPassword:kdbPassword];
-    
-    [tree release];
+  NSDate *currentTime = [NSDate date];
+  
+  Kdb4Tree *tree = [[Kdb4Tree alloc] init];
+  tree.generator = @"MiniKeePass";
+  tree.databaseName = @"";
+  tree.databaseNameChanged = currentTime;
+  tree.databaseDescription = @"";
+  tree.databaseDescriptionChanged = currentTime;
+  tree.defaultUserName = @"";
+  tree.defaultUserNameChanged = currentTime;
+  tree.maintenanceHistoryDays = 365;
+  tree.color = @"";
+  tree.masterKeyChanged = currentTime;
+  tree.masterKeyChangeRec = -1;
+  tree.masterKeyChangeForce = -1;
+  tree.protectTitle = NO;
+  tree.protectUserName = NO;
+  tree.protectPassword = YES;
+  tree.protectUrl = NO;
+  tree.protectNotes = NO;
+  tree.recycleBinEnabled = YES;
+  tree.recycleBinUuid = [UUID nullUuid];
+  tree.recycleBinChanged = currentTime;
+  tree.entryTemplatesGroup = [UUID nullUuid];
+  tree.entryTemplatesGroupChanged = currentTime;
+  tree.historyMaxItems = 10;
+  tree.historyMaxSize = 6 * 1024 * 1024; // 6 MB
+  tree.lastSelectedGroup = [UUID nullUuid];
+  tree.lastTopVisibleGroup = [UUID nullUuid];
+  
+  KdbGroup *parentGroup = [tree createGroup:nil];
+  parentGroup.name = @"General";
+  parentGroup.image = 48;
+  tree.root = parentGroup;
+  
+  KdbGroup *group = [tree createGroup:parentGroup];
+  group.name = @"Windows";
+  group.image = 38;
+  [parentGroup addGroup:group];
+  
+  group = [tree createGroup:parentGroup];
+  group.name = @"Network";
+  group.image = 3;
+  [parentGroup addGroup:group];
+  
+  group = [tree createGroup:parentGroup];
+  group.name = @"Internet";
+  group.image = 1;
+  [parentGroup addGroup:group];
+  
+  group = [tree createGroup:parentGroup];
+  group.name = @"eMail";
+  group.image = 19;
+  [parentGroup addGroup:group];
+  
+  group = [tree createGroup:parentGroup];
+  group.name = @"Homebanking";
+  group.image = 37;
+  [parentGroup addGroup:group];
+  
+  [self persist:tree file:fileName withPassword:kdbPassword];
+  
+  [tree release];
 }
 
 @end
