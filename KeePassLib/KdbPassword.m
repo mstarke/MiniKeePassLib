@@ -12,7 +12,7 @@
 #import "KdbPassword.h"
 #import "DDXML.h"
 #import "DDXMLElementAdditions.h"
-#import "Base64.h"
+#import "NSMutableData+Base64.h"
 
 @interface KdbPassword () {
     NSString *password;
@@ -241,7 +241,7 @@ int hex2dec(char c);
 
     [document release];
 
-    return [Base64 decode:[dataString dataUsingEncoding:NSASCIIStringEncoding]];
+    return [NSMutableData mutableDataWithDecodedData:[dataString dataUsingEncoding:NSASCIIStringEncoding]];
 }
 
 - (NSData*)loadBinKeyFile32:(NSFileHandle *)fh {
