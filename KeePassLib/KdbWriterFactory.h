@@ -19,10 +19,8 @@
 #import "Kdb.h"
 #import "KdbPassword.h"
 
-@interface KdbWriterFactory : NSObject {
-    
-}
+@interface KdbWriterFactory : NSObject
 
-+ (void)persist:(KdbTree*)tree file:(NSString*)filename withPassword:(KdbPassword*)kdbPassword;
++ (void)persist:(KdbTree *)tree fileURL:(NSURL *)fileURL withPassword:(KdbPassword *)kdbPassword error:(NSError **)error;
 
 @end

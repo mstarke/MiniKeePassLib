@@ -18,22 +18,34 @@
 #import "KdbWriterFactory.h"
 #import "Kdb3Writer.h"
 #import "Kdb4Writer.h"
+#import "KPLErrorCodes.h"
 
 @implementation KdbWriterFactory
 
-+ (void)persist:(KdbTree*)tree file:(NSString*)filename withPassword:(KdbPassword*)kdbPassword {
-    id<KdbWriter> writer;
-    
-    if ([tree isKindOfClass:[Kdb3Tree class]]) {
-        writer = [[Kdb3Writer alloc] init];
-    } else if ([tree isKindOfClass:[Kdb4Tree class]]) {
-        writer = [[Kdb4Writer alloc] init];
-    } else {
-        @throw [NSException exceptionWithName:@"IllegalArgument" reason:@"KdbTree is not of a known type" userInfo:nil];
-    }
-    
-    [writer persist:tree file:filename withPassword:kdbPassword];
++ (void)persist:(KdbTree *)tree fileURL:(NSURL *)fileURL withPassword:(KdbPassword *)kdbPassword error:(NSError **)error {
+  id<KdbWriter> writer;
+  
+  if([tree isKindOfClass:[Kdb3Tree class]]) {
+    writer = [[Kdb3Writer alloc] init];
+  }
+  else if([tree isKindOfClass:[Kdb4Tree class]]) {
+    writer = [[Kdb4Writer alloc] init];
+  }
+  else {
+    NSDictionary *userInfo = @{ NSLocalizedDescriptionKey : NSLocalizedStringFromTable( @"ERROR_TREE_CLASS_NOT_RECOGNIZED", @"Errors", @"Database is of unknown type" ) };
+    *error = [NSError errorWithDomain:NSCocoaErrorDomain code:KPLErrorUnknownFileFormat userInfo:userInfo];
+    return;
+  }
+  @try {
+    [writer persist:tree fileURL:fileURL withPassword:kdbPassword error:error];
+  }
+  @catch (NSException *exception) {
+    NSDictionary *userInfo = @{ NSLocalizedDescriptionKey : NSLocalizedStringFromTable(@"ERROR_PERSIST_FAILED", @"Errors", @"Failed to write the database") };
+    *error = [NSError errorWithDomain:0 code:KPLErrorWriteFailed userInfo:userInfo];
+  }
+  @finally {
     [writer release];
+  }
 }
 
 @end

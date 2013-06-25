@@ -26,6 +26,5 @@
 }
 
 - (id)initWithRandomStream:(RandomStream*)cryptoRandomStream;
-- (Kdb4Tree*)parse:(InputStream*)inputStream;
-
+- (Kdb4Tree *)parse:(InputStream *)inputStream error:(NSError **)error;
 @end

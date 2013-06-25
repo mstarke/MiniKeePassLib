@@ -57,7 +57,7 @@
   [super dealloc];
 }
 
-- (void)persist:(Kdb4Tree*)tree file:(NSString*)filename withPassword:(KdbPassword*)kdbPassword {
+- (BOOL)persist:(Kdb4Tree *)tree fileURL:(NSURL *)fileURL withPassword:(KdbPassword *)kdbPassword error:(NSError **)error {
   // Configure the output stream
   DataOutputStream *outputStream = [[[DataOutputStream alloc] init] autorelease];
   
@@ -91,14 +91,15 @@
   
   // Write to the file
 #ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
-  if (![outputStream.data writeToFile:filename options:NSDataWritingFileProtectionComplete error:nil]) {
-    @throw [NSException exceptionWithName:@"IOError" reason:@"Failed to write file" userInfo:nil];
+  if(![outputStream.data writeToURL:fileURL options:NSDataWritingFileProtectionComplete error:error]) {
+    return NO;
   }
 #endif
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
-  if (![outputStream.data writeToFile:filename options:0 error:nil]) {
-    @throw [NSException exceptionWithName:@"IOError" reason:@"Failed to write file" userInfo:nil];
+  if(![outputStream.data writeToURL:fileURL options:0 error:error]) {
+    return NO;
   }
+  return YES;
   
 #endif
 }
@@ -153,7 +154,8 @@
   [self writeHeaderField:outputStream headerId:HEADER_EOH data:buffer length:4];
 }
 
-- (void)newFile:(NSString*)fileName withPassword:(KdbPassword*)kdbPassword {
+- (void)newFile:(NSURL *)fileURL withPassword:(KdbPassword *)kdbPassword error:(NSError **)error {
+
   NSDate *currentTime = [NSDate date];
   
   Kdb4Tree *tree = [[Kdb4Tree alloc] init];
@@ -214,7 +216,7 @@
   group.image = 37;
   [parentGroup addGroup:group];
   
-  [self persist:tree file:fileName withPassword:kdbPassword];
+  [self persist:tree fileURL:fileURL withPassword:kdbPassword error:error];
   
   [tree release];
 }

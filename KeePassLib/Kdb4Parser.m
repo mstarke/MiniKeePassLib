@@ -20,6 +20,7 @@
 #import "DDXML.h"
 #import "DDXMLElementAdditions.h"
 #import "NSMutableData+Base64.h"
+#import "KPLErrorCodes.h"
 
 @interface Kdb4Parser (PrivateMethods)
 - (void)decodeProtected:(DDXMLElement *)root;
@@ -63,7 +64,7 @@ int closeCallback(void *context) {
   return 0;
 }
 
-- (Kdb4Tree *)parse:(InputStream *)inputStream {  
+- (Kdb4Tree *)parse:(InputStream *)inputStream error:(NSError **)error {
   NSMutableData *streamData = [[NSMutableData alloc] init];
   while(YES) {
     uint8_t bytes[32];
@@ -73,15 +74,12 @@ int closeCallback(void *context) {
     }
     [streamData appendBytes:bytes length:iLenght];
   }
-  NSError *error = nil;
-  DDXMLDocument *document = [[[DDXMLDocument alloc] initWithData:streamData options:0 error:nil] autorelease];
+  /* Close the stream */
+  [inputStream close];
+  DDXMLDocument *document = [[[DDXMLDocument alloc] initWithData:streamData options:0 error:error] autorelease];
   
-  if(error) {
-    NSLog(@"%@", [error localizedDescription]);
-  }
-  
-  if (document == nil) {
-    @throw [NSException exceptionWithName:@"ParseError" reason:@"Failed to parse database" userInfo:nil];
+  if(!document) {
+    return nil;
   }
   
   // Get the root document element
@@ -98,19 +96,28 @@ int closeCallback(void *context) {
   }
   
   DDXMLElement *root = [rootElement elementForName:@"Root"];
-  if (root == nil) {
-    @throw [NSException exceptionWithName:@"ParseError" reason:@"Failed to parse database" userInfo:nil];
+  if(!root) {
+    if(error) {
+      NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: NSLocalizedStringFromTable(@"ERROR_NO_GROUP_NODE_FOUND", @"Errors", @"No Group node found in Database")};
+      *error = [NSError errorWithDomain:KPLErrorDomain code:KPLErrorParsingFailed userInfo:userInfo];
+    }
+    return nil;
   }
   
   DDXMLElement *element = [root elementForName:@"Group"];
-  if (element == nil) {
-    @throw [NSException exceptionWithName:@"ParseError" reason:@"Failed to parse database" userInfo:nil];
+  if(!element) {
+    if(error) {
+      NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: NSLocalizedStringFromTable(@"ERROR_NO_GROUP_NODE_FOUND", @"Errors", @"No Group node found in Database")};
+      *error = [NSError errorWithDomain:KPLErrorDomain code:KPLErrorParsingFailed userInfo:userInfo];
+    }
+    return nil;
   }
   
   tree.root = [self parseGroup:element];
   
   return tree;
 }
+
 
 - (void)decodeProtected:(DDXMLElement *)root {
   DDXMLNode *protectedAttribute = [root attributeForName:@"Protected"];
