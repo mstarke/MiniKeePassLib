@@ -20,6 +20,12 @@
     return self;
 }
 
+- (void)dealloc {
+  [_groups release];
+  [_entries release];
+  [super dealloc];
+}
+
 - (void)addGroup:(KdbGroup *)group {
     group.parent = self;
     [_groups addObject:group];
@@ -133,6 +139,11 @@
 
 
 @implementation KdbTree
+
+- (void)dealloc {
+  [_root release];
+  [super dealloc];
+}
 
 - (KdbGroup*)createGroup:(KdbGroup*)parent {
     [self doesNotRecognizeSelector:_cmd];

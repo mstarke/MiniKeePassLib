@@ -45,6 +45,12 @@ int hex2dec(char c);
   return self;
 }
 
+- (void)dealloc {
+  [_password release];
+  [_keyFileURL release];
+  [super dealloc];
+}
+
 - (NSData*)createFinalKeyForVersion:(uint8_t)version
                          masterSeed:(NSData*)masterSeed
                       transformSeed:(NSData*)transformSeed
