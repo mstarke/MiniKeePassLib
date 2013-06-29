@@ -249,6 +249,22 @@
     [super dealloc];
 }
 
+- (void)setDatabaseDescription:(NSString *)databaseDescription {
+  if(![_databaseDescription isEqualToString:databaseDescription]) {
+    [_databaseDescription release];
+    _databaseDescription = [databaseDescription copy];
+    self.databaseDescriptionChanged = [NSDate date];
+  }
+}
+
+- (void)setDatabaseName:(NSString *)databaseName {
+  if(![_databaseName isEqualToString:databaseName]) {
+    [_databaseName release];
+    _databaseName = [databaseName copy];
+    self.databaseNameChanged = [NSDate date];
+  }
+}
+
 - (KdbGroup*)createGroup:(KdbGroup*)parent {
     Kdb4Group *group = [[Kdb4Group alloc] init];
 
