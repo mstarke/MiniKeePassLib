@@ -173,20 +173,20 @@ int hex2dec(char c);
   if([fileData length] == 32) {
     return fileData; // Loading of a 32 bit binary file succeded;
   }
-  
+  NSData *decordedData = nil;
   if ([fileData length] == 64) {
     error = nil;
     NSString *hexstring = [[NSString alloc] initWithData:fileData encoding:NSUTF8StringEncoding];
     if(!error && hexstring != nil) {
-      fileData = [self keyDataWithHexString:hexstring];
+      decordedData = [self keyDataWithHexString:hexstring];
     }
     [hexstring release];
   }
-  if(!fileData) {
+  if(!decordedData) {
     // The hex encoded file failed to load, so try and hash the file
-    fileData = [self keyDataFromHash:fileData];
+    decordedData = [self keyDataFromHash:fileData];
   }
-  return fileData;
+  return decordedData;
 }
 
 - (NSData *)loadKeyFileV4:(NSURL *)fileURL {
@@ -272,8 +272,9 @@ int hex2dec(char c);
   CC_SHA256_CTX ctx;
   CC_SHA256_Init(&ctx);
   @autoreleasepool {
-    for(NSUInteger iIndex = 0; iIndex < ([fileData length] - 2048); iIndex += 2048) {
-      chunk = [fileData subdataWithRange:NSMakeRange(0, 2048)];
+    const NSUInteger chunkSize = 2048;
+    for(NSUInteger iIndex = 0; iIndex < ([fileData length] - chunkSize); iIndex += chunkSize) {
+      chunk = [fileData subdataWithRange:NSMakeRange(iIndex * chunkSize, chunkSize)];
       CC_SHA256_Update(&ctx, chunk.bytes, (CC_LONG)chunk.length);
     }
   }
