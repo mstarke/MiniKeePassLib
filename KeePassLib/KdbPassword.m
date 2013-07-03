@@ -45,12 +45,6 @@ int hex2dec(char c);
   return self;
 }
 
-- (void)dealloc {
-  [_password release];
-  [_keyFileURL release];
-  [super dealloc];
-}
-
 - (NSData*)createFinalKeyForVersion:(uint8_t)version
                          masterSeed:(NSData*)masterSeed
                       transformSeed:(NSData*)transformSeed
@@ -180,7 +174,6 @@ int hex2dec(char c);
     if(!error && hexstring != nil) {
       decordedData = [self keyDataWithHexString:hexstring];
     }
-    [hexstring release];
   }
   if(!decordedData) {
     // The hex encoded file failed to load, so try and hash the file
@@ -216,23 +209,21 @@ int hex2dec(char c);
   
   DDXMLElement *keyElement = [rootElement elementForName:@"Key"];
   if (keyElement == nil) {
-    [document release];
+    document = nil;
     @throw [NSException exceptionWithName:@"ParseError" reason:@"Failed to parse keyfile" userInfo:nil];
   }
   
   DDXMLElement *dataElement = [keyElement elementForName:@"Data"];
   if (dataElement == nil) {
-    [document release];
+    document = nil;
     @throw [NSException exceptionWithName:@"ParseError" reason:@"Failed to parse keyfile" userInfo:nil];
   }
   
   NSString *dataString = [dataElement stringValue];
   if (dataString == nil) {
-    [document release];
+    document = nil;
     @throw [NSException exceptionWithName:@"ParseError" reason:@"Failed to parse keyfile" userInfo:nil];
   }
-  
-  [document release];
   
   return [NSMutableData mutableDataWithDecodedData:[dataString dataUsingEncoding:NSASCIIStringEncoding]];
 }

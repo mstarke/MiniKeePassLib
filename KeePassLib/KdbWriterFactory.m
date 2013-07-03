@@ -44,7 +44,7 @@
     *error = [NSError errorWithDomain:0 code:KPLErrorWriteFailed userInfo:userInfo];
   }
   @finally {
-    [writer release];
+    writer = nil;
     return (error != nil);
   }
 }

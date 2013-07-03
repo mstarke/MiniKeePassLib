@@ -37,19 +37,12 @@
 - init {
   self = [super init];
   if (self) {
-    masterSeed = [[NSData dataWithRandomBytes:16] retain];
-    encryptionIv = [[NSData dataWithRandomBytes:16] retain];
-    transformSeed = [[NSData dataWithRandomBytes:32] retain];
+    masterSeed = [NSData dataWithRandomBytes:16];
+    encryptionIv = [NSData dataWithRandomBytes:16];
+    transformSeed = [NSData dataWithRandomBytes:32];
     firstGroup = YES;
   }
   return self;
-}
-
-- (void)dealloc {
-  [masterSeed release];
-  [encryptionIv release];
-  [transformSeed release];
-  [super dealloc];
 }
 
 /**
@@ -106,8 +99,7 @@
     // Closing the output stream computes the hash and encrypts the last block
     [shaOutputStream close];
     
-    // Release and reopen the file back up and write the content hash
-    [fileOutputStream release];
+    // Reopen the file back up and write the content hash
     fileOutputStream = [[FileOutputStream alloc] initWithFilename:[fileURL path] flags:O_WRONLY mode:0644];
     [fileOutputStream seek:56];
     [fileOutputStream write:[shaOutputStream getHash] length:32];
@@ -120,9 +112,9 @@
                                             error:nil];
 #endif
   } @finally {
-    [shaOutputStream release];
-    [aesOutputStream release];
-    [fileOutputStream release];
+    shaOutputStream = nil;
+    aesOutputStream = nil;
+    fileOutputStream = nil;
   }
 }
 
@@ -200,7 +192,6 @@
     // Write the extra data to a field with id 0
     [self appendField:0 size:(uint32_t)dataOutputStream.data.length bytes:dataOutputStream.data.bytes withOutputStream:outputStream];
     
-    [dataOutputStream release];
     firstGroup = NO;
   }
   
@@ -373,9 +364,6 @@
   
   BOOL ok = [self persist:tree fileURL:fileURL withPassword:kdbPassword error:error];
   
-  [tree release];
-  [rootGroup release];
-
   return ok;
 }
 

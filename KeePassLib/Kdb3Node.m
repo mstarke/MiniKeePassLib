@@ -19,11 +19,6 @@
     return self;
 }
 
-- (void)dealloc {
-    [_metaEntries release];
-    [super dealloc];
-}
-
 - (void)addEntry:(KdbEntry *)entry {
     entry.parent = self;
     
@@ -49,17 +44,6 @@
 
 @implementation Kdb3Entry
 
-- (void)dealloc {
-    [_uuid release];
-    [_title release];
-    [_username release];
-    [_password release];
-    [_url release];
-    [_notes release];
-    [_binaryDesc release];
-    [_binary release];
-    [super dealloc];
-}
 
 - (BOOL)isMeta {
     if (!_binary || _binary.length == 0) {
@@ -120,14 +104,14 @@
         group.groupId = random();
     } while (![self isGroupIdUnique:(Kdb3Group*)self.root groupId:group.groupId]);
 
-    return [group autorelease];
+    return group;
 }
 
 - (KdbEntry*)createEntry:(KdbGroup*)parent {
     Kdb3Entry *entry = [[Kdb3Entry alloc] init];
     entry.uuid = [UUID uuid];
 
-    return [entry autorelease];
+    return entry;
 }
 
 @end

@@ -36,9 +36,6 @@
   NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
   NSDate *date = [calendar dateFromComponents:dateComponents];
   
-  [calendar release];
-  [dateComponents release];
-  
   return date;
 }
 
@@ -53,7 +50,6 @@
   if(self) {
     NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
     NSDateComponents *dateComponents = [calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit | NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit) fromDate:self];
-    [calendar release];
     
     year = (uint32_t)[dateComponents year];
     month = (uint32_t)[dateComponents month];

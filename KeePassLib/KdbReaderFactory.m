@@ -28,7 +28,7 @@
     } else if (sig1 == KDB4_SIG1 && sig2 == KDB4_SIG2) {
         reader = [[Kdb4Reader alloc] init];
     } else {
-        [inputStream release];
+        inputStream = nil;
         @throw [NSException exceptionWithName:@"IOException" reason:@"Invalid file signature" userInfo:nil];
     }
 
@@ -36,14 +36,10 @@
     [inputStream seek:0];
     
     KdbTree *tree = [reader load:inputStream withPassword:kdbPassword];
-    [reader release];
-    
-    [inputStream release];
-    
     return tree;
 }
 
-+ (KdbTree *)load:(NSURL *)fileURL withPassword:(KdbPassword *)password error:(NSError **)error {
++ (KdbTree *)loasd:(NSURL *)fileURL withPassword:(KdbPassword *)password error:(NSError **)error {
   NSAssert(NO, @"Not implemented");
   return nil;
 }

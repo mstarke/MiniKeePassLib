@@ -73,18 +73,6 @@ typedef NS_ENUM(NSUInteger, MPFieldType) {
   return self;
 }
 
-- (void)dealloc {
-  [masterSeed release];
-  [encryptionIv release];
-  [contentsHash release];
-  [masterSeed2 release];
-  [headerHash release];
-  [levels release];
-  [groups release];
-  [entries release];
-  [super dealloc];
-}
-
 - (KdbTree *)load:(InputStream *)inputStream withPassword:(KdbPassword *)kdbPassword {
   [self readHeader:inputStream];
   
@@ -106,7 +94,7 @@ typedef NS_ENUM(NSUInteger, MPFieldType) {
     // Build the tree
     return [self buildTree];
   } @finally {
-    [aesInputStream release];
+    aesInputStream = nil;
   }
   
   return nil;
@@ -151,7 +139,7 @@ typedef NS_ENUM(NSUInteger, MPFieldType) {
   keyEncRounds = CFSwapInt32LittleToHost(header.keyEncRounds);
   
   // Compute a sha256 hash of the header up to but not including the contentsHash
-  headerHash = [[Kdb3Utils hashHeader:&header] retain];
+  headerHash = [Kdb3Utils hashHeader:&header];
 }
 
 - (void)readGroups:(InputStream *)inputStream {
@@ -229,7 +217,7 @@ typedef NS_ENUM(NSUInteger, MPFieldType) {
           
         case FieldTypeCommonStop:
           if (fieldSize != 0) {
-            [group release];
+            group = nil;
             @throw [NSException exceptionWithName:@"IOException" reason:@"Invalid field size" userInfo:nil];
           }
           
@@ -239,12 +227,10 @@ typedef NS_ENUM(NSUInteger, MPFieldType) {
           break;
           
         default:
-          [group release];
+          group = nil;
           @throw [NSException exceptionWithName:@"IOException" reason:@"Invalid field type" userInfo:nil];
       }
     }
-    
-    [group release];
   }
 }
 
@@ -277,11 +263,11 @@ typedef NS_ENUM(NSUInteger, MPFieldType) {
           
         case FieldTypeEntryUUID:
           if (fieldSize != 16) {
-            [entry release];
+            entry = nil;
             @throw [NSException exceptionWithName:@"IOException" reason:@"Invalid field size" userInfo:nil];
           }
           if ([inputStream read:buffer length:fieldSize] != fieldSize) {
-            [entry release];
+            entry = nil;
             @throw [NSException exceptionWithName:@"IOException" reason:@"Failed to read UUID" userInfo:nil];
           }
           entry.uuid = [UUID uuidWithBytes:buffer];
@@ -319,7 +305,7 @@ typedef NS_ENUM(NSUInteger, MPFieldType) {
           
         case FieldTypeEntryCreationTime:
           if (fieldSize != 5) {
-            [entry release];
+            entry = nil;
             @throw [NSException exceptionWithName:@"IOException" reason:@"Invalid field size" userInfo:nil];
           }
           [inputStream read:buffer length:fieldSize];
@@ -328,7 +314,7 @@ typedef NS_ENUM(NSUInteger, MPFieldType) {
           
         case FieldTypeEntryModificationTime:
           if (fieldSize != 5) {
-            [entry release];
+            entry = nil;
             @throw [NSException exceptionWithName:@"IOException" reason:@"Invalid field size" userInfo:nil];
           }
           [inputStream read:buffer length:fieldSize];
@@ -337,7 +323,7 @@ typedef NS_ENUM(NSUInteger, MPFieldType) {
           
         case FieldTypeEntryAccessTime:
           if (fieldSize != 5) {
-            [entry release];
+            entry = nil;
             @throw [NSException exceptionWithName:@"IOException" reason:@"Invalid field size" userInfo:nil];
           }
           [inputStream read:buffer length:fieldSize];
@@ -346,7 +332,7 @@ typedef NS_ENUM(NSUInteger, MPFieldType) {
           
         case FieldTypeEntryExpiryDate:
           if (fieldSize != 5) {
-            [entry release];
+            entry = nil;
             @throw [NSException exceptionWithName:@"IOException" reason:@"Invalid field size" userInfo:nil];
           }
           [inputStream read:buffer length:fieldSize];
@@ -365,7 +351,7 @@ typedef NS_ENUM(NSUInteger, MPFieldType) {
           
         case FieldTypeCommonStop:
           if (fieldSize != 0) {
-            [entry release];
+            entry = nil;
             @throw [NSException exceptionWithName:@"IOException" reason:@"Invalid field size" userInfo:nil];
           }
           
@@ -383,12 +369,10 @@ typedef NS_ENUM(NSUInteger, MPFieldType) {
           break;
           
         default:
-          [entry release];
+          entry = nil;
           @throw [NSException exceptionWithName:@"IOException" reason:@"Invalid field type" userInfo:nil];
       }
     }
-    
-    [entry release];
   }
 }
 
@@ -470,16 +454,16 @@ typedef NS_ENUM(NSUInteger, MPFieldType) {
       level2 = [levels[j] unsignedIntValue];
       if (level2 < level1) {
         if (level1 - level2 != 1) {
-          [tree release];
-          [root release];
+          tree = nil;
+          root = nil;
           @throw [NSException exceptionWithName:@"InvalidData" reason:@"InvalidTree" userInfo:nil];
         } else {
           break;
         }
       }
       if (j == 0) {
-        [tree release];
-        [root release];
+        tree = nil;
+        root = nil;
         @throw [NSException exceptionWithName:@"InvalidData" reason:@"InvalidTree" userInfo:nil];
       }
     }
@@ -487,10 +471,8 @@ typedef NS_ENUM(NSUInteger, MPFieldType) {
     Kdb3Group *parent = groups[j];
     [parent addGroup:group];
   }
-  
-  [root release];
-  
-  return [tree autorelease];
+
+  return tree;
 }
 
 @end

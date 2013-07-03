@@ -20,12 +20,12 @@ static NSData *base64helper(NSData *input, SecTransformRef transform)
   if (!transform)
     return nil;
   
-  if (SecTransformSetAttribute(transform, kSecTransformInputAttributeName, input, NULL))
-    output = (NSData *)SecTransformExecute(transform, NULL);
+  if (SecTransformSetAttribute(transform, kSecTransformInputAttributeName, (__bridge CFTypeRef)(input), NULL))
+    output = (NSData *)CFBridgingRelease(SecTransformExecute(transform, NULL));
   
   CFRelease(transform);
   
-  return [output autorelease];
+  return output;
 }
 
 @implementation NSMutableData (Base64)
@@ -34,12 +34,12 @@ static NSData *base64helper(NSData *input, SecTransformRef transform)
 + (NSMutableData *)mutableDataWithEncodedData:(NSData *)inputData {
   SecTransformRef transform = SecEncodeTransformCreate(kSecBase64Encoding, NULL);
 
-  return [[[NSMutableData alloc] initWithData:base64helper(inputData, transform)] autorelease];
+  return [[NSMutableData alloc] initWithData:base64helper(inputData, transform)];
 }
 
 + (NSMutableData *)mutableDataWithDecodedData:(NSData *)inputData {
   SecTransformRef transform = SecDecodeTransformCreate(kSecBase64Encoding, NULL);
-  return [[[NSMutableData  alloc] initWithData:base64helper(inputData, transform)] autorelease];
+  return [[NSMutableData  alloc] initWithData:base64helper(inputData, transform)];
 }
 
 @end

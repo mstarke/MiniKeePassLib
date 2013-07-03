@@ -19,11 +19,6 @@ static NSUUID *aesUUID = nil;
   return [NSData dataWithBytes:bytes length:sizeof(bytes)];
 }
 
-- (void)dealloc {
-  [aesUUID release];
-  [super dealloc];
-}
-
 - (BOOL)isEqual:(id)object {
   if (self == object) {
     return YES;
@@ -36,7 +31,7 @@ static NSUUID *aesUUID = nil;
 
 + (NSUUID *)nullUUID {
   uint8_t bytes[16] = {0};
-  return [[[NSUUID alloc] initWithUUIDBytes:bytes] autorelease];
+  return [[NSUUID alloc] initWithUUIDBytes:bytes];
 }
 
 + (NSUUID *)AESUUID {
