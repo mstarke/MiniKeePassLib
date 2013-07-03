@@ -273,8 +273,9 @@ int hex2dec(char c);
   CC_SHA256_Init(&ctx);
   @autoreleasepool {
     const NSUInteger chunkSize = 2048;
-    for(NSUInteger iIndex = 0; iIndex < ([fileData length] - chunkSize); iIndex += chunkSize) {
-      chunk = [fileData subdataWithRange:NSMakeRange(iIndex * chunkSize, chunkSize)];
+    for(NSUInteger iIndex = 0; iIndex < [fileData length]; iIndex += chunkSize) {
+      NSUInteger maxChunkLenght = MIN(fileData.length - iIndex, chunkSize);
+      chunk = [fileData subdataWithRange:NSMakeRange(iIndex, maxChunkLenght)];
       CC_SHA256_Update(&ctx, chunk.bytes, (CC_LONG)chunk.length);
     }
   }
@@ -282,25 +283,5 @@ int hex2dec(char c);
   
   return [NSData dataWithBytes:buffer length:32];
 }
-
-//- (NSData*)loadHashKeyFile:(NSFileHandle*)fh {
-//  uint8_t buffer[32];
-//  NSData *data;
-//  
-//  CC_SHA256_CTX ctx;
-//  CC_SHA256_Init(&ctx);
-//  
-//  while (TRUE) {
-//    data = [fh readDataOfLength:2048];
-//    if (data.length == 0) {
-//      break;
-//    }
-//    CC_SHA256_Update(&ctx, data.bytes, data.length);
-//  }
-//  
-//  CC_SHA256_Final(buffer, &ctx);
-//  
-//  return [NSData dataWithBytes:buffer length:32];
-//}
 
 @end
