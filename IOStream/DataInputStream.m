@@ -17,20 +17,19 @@
 
 #import "DataInputStream.h"
 
+#if ! __has_feature(objc_arc)
+#warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
+#endif
+
 @implementation DataInputStream
 
 - (id)initWithData:(NSData*)d {
     self = [super init];
     if (self) {
-        data = [d retain];
+        data = d;
         dataOffset = 0;
     }
     return self;
-}
-
-- (void)dealloc {
-    [data release];
-    [super dealloc];
 }
 
 - (NSUInteger)read:(void*)bytes length:(NSUInteger)bytesLength {

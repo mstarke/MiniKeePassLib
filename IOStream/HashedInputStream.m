@@ -18,6 +18,10 @@
 #import <CommonCrypto/CommonDigest.h>
 #import "HashedInputStream.h"
 
+#if ! __has_feature(objc_arc)
+#warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
+#endif
+
 @interface HashedInputStream (PrivateMethods)
 - (BOOL)readHashedBlock;
 @end
@@ -27,7 +31,7 @@
 - (id)initWithInputStream:(InputStream*)stream {
     self = [super init];
     if (self) {
-        inputStream = [stream retain];
+        inputStream = stream;
         
         buffer = NULL;
         bufferOffset = 0;
@@ -37,13 +41,9 @@
 }
 
 - (void)dealloc {
-    [inputStream release];
-    
     if (buffer != NULL) {
         free(buffer);
     }
-    
-    [super dealloc];
 }
 
 - (NSUInteger)read:(void*)bytes length:(NSUInteger)bytesLength {

@@ -19,6 +19,10 @@
 
 #include <fcntl.h>
 
+#if ! __has_feature(objc_arc)
+#warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
+#endif
+
 @implementation FileInputStream
 
 - (id)initWithFilename:(NSString*)filename {
@@ -34,7 +38,6 @@
 
 - (void)dealloc {
     [self close];
-    [super dealloc];
 }
 
 - (NSUInteger)read:(void*)bytes length:(NSUInteger)bytesLength {

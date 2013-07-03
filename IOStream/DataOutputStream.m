@@ -17,6 +17,16 @@
 
 #import "DataOutputStream.h"
 
+#if ! __has_feature(objc_arc)
+#warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
+#endif
+
+@interface DataOutputStream ()
+
+@property (nonatomic, strong) NSMutableData *data;
+
+@end
+
 @implementation DataOutputStream
 
 - (id)init {
@@ -25,11 +35,6 @@
         _data = [[NSMutableData alloc] init];
     }
     return self;
-}
-
-- (void)dealloc {
-    [_data release];
-    [super dealloc];
 }
 
 - (NSUInteger)write:(const void *)bytes length:(NSUInteger)bytesLength {

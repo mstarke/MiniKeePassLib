@@ -18,6 +18,10 @@
 #import <CommonCrypto/CommonDigest.h>
 #import "HashedOutputStream.h"
 
+#if ! __has_feature(objc_arc)
+#warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
+#endif
+
 @interface HashedOutputStream (PrivateMethods)
 - (void)writeHashedBlock;
 @end
@@ -27,7 +31,7 @@
 - (id)initWithOutputStream:(OutputStream*)stream blockSize:(uint32_t)blockSize {
     self = [super init];
     if (self) {
-        outputStream = [stream retain];
+        outputStream = stream;
         
         blockIndex = 0;
         
@@ -39,9 +43,7 @@
 }
 
 - (void)dealloc {
-    [outputStream release];
     free(buffer);
-    [super dealloc];
 }
 
 - (NSUInteger)write:(const void *)bytes length:(NSUInteger)bytesLength {

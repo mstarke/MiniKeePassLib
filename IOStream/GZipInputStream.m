@@ -17,6 +17,10 @@
 
 #import "GZipInputStream.h"
 
+#if ! __has_feature(objc_arc)
+#warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
+#endif
+
 @interface GZipInputStream (PrivateMethods)
 - (BOOL)decompress;
 @end
@@ -26,7 +30,7 @@
 - (id)initWithInputStream:(InputStream*)stream {
     self = [super init];
     if (self) {
-        inputStream = [stream retain];
+        inputStream = stream;
         
         zstream.zalloc = Z_NULL;
         zstream.zfree = Z_NULL;
@@ -40,11 +44,6 @@
         }
     }
     return self;
-}
-
-- (void)dealloc {
-    [inputStream release];
-    [super dealloc];
 }
 
 - (NSUInteger)read:(void*)bytes length:(NSUInteger)bytesLength {

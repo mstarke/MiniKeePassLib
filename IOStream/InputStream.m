@@ -17,6 +17,10 @@
 
 #import "InputStream.h"
 
+#if ! __has_feature(objc_arc)
+#warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
+#endif
+
 @implementation InputStream
 
 - (NSUInteger)read:(void*)bytes length:(NSUInteger)bytesLength {
@@ -71,7 +75,7 @@
     
     [self read:bytes length:length];
     
-    return [[[NSString alloc] initWithBytes:bytes length:length encoding:encoding] autorelease];
+    return [[NSString alloc] initWithBytes:bytes length:length encoding:encoding];
 }
 
 - (NSString*)readCString:(NSUInteger)length encoding:(NSStringEncoding)encoding {

@@ -17,6 +17,10 @@
 
 #import "FileOutputStream.h"
 
+#if ! __has_feature(objc_arc)
+#warning This file must be compiled with ARC. Use -fobjc-arc flag (or convert project to ARC).
+#endif
+
 @implementation FileOutputStream
 
 - (id)initWithFilename:(NSString*)filename flags:(NSUInteger)flags mode:(NSUInteger)mode {
@@ -32,7 +36,6 @@
 
 - (void)dealloc {
     [self close];
-    [super dealloc];
 }
 
 - (NSUInteger)write:(const void *)bytes length:(NSUInteger)bytesLength {
