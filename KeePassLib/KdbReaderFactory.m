@@ -39,7 +39,8 @@
     return tree;
 }
 
-+ (KdbTree *)loasd:(NSURL *)fileURL withPassword:(KdbPassword *)password error:(NSError **)error {
++ (KdbTree *)load:(NSURL *)fileURL withPassword:(KdbPassword *)password error:(NSError **)error {
+  // FIXME: Implement
   NSAssert(NO, @"Not implemented");
   return nil;
 }
