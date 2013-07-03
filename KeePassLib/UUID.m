@@ -60,7 +60,6 @@ static UUID *AES_UUID;
 
 - (void)dealloc {
     CFRelease(uuid);
-    [super dealloc];
 }
 
 - (void)getBytes:(uint8_t*)bytes length:(NSUInteger)length {
@@ -96,21 +95,21 @@ static UUID *AES_UUID;
 }
 
 - (NSString*)description {
-    NSString *uuidString = (NSString *)CFUUIDCreateString(NULL, uuid);
-    return [uuidString autorelease];
+    NSString *uuidString = (NSString *)CFBridgingRelease(CFUUIDCreateString(NULL, uuid));
+    return uuidString;
 }
 
 + (UUID *)uuid {
-    return [[[UUID alloc] init] autorelease];
+    return [[UUID alloc] init];
 }
 
 + (UUID *)uuidWithBytes:(uint8_t *)bytes {
-  return [[[UUID alloc] initWithBytes:bytes] autorelease];
+  return [[UUID alloc] initWithBytes:bytes];
 }
 
 + (UUID *)nullUuid {
     uint8_t bytes[16] = {0};
-    return [[[UUID alloc] initWithBytes:bytes] autorelease];
+    return [[UUID alloc] initWithBytes:bytes];
 }
 
 + (UUID*)getAESUUID {
