@@ -104,6 +104,10 @@ static UUID *AES_UUID;
     return [[[UUID alloc] init] autorelease];
 }
 
++ (UUID *)uuidWithBytes:(uint8_t *)bytes {
+  return [[[UUID alloc] initWithBytes:bytes] autorelease];
+}
+
 + (UUID *)nullUuid {
     uint8_t bytes[16] = {0};
     return [[[UUID alloc] initWithBytes:bytes] autorelease];

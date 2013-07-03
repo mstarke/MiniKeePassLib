@@ -31,6 +31,7 @@
 - (NSData *)getData;
 
 + (UUID *)uuid;
++ (UUID *)uuidWithBytes:(uint8_t *)bytes;
 + (UUID *)nullUuid;
 + (UUID *)getAESUUID;
 
