@@ -23,6 +23,26 @@
 #define KDB4_SIG2              0xB54BFB67
 #define KDB4_VERSION           0x00030000
 
+typedef NS_ENUM(NSUInteger, KPLHeaderKey ) {
+  KPLHeaderKeyEndOfHeader,
+  KPLHeaderKeyComment,
+  KPLHeaderKeyCipherId,
+  KPLHeaderKeyCompression,
+  KPLHeaderKeyMasterSeed,
+  KPLHeaderKeyTransformSeed,
+  KPLHeaderKeyTransformRounds,
+  KPLHeaderKeyEncryptionIV,
+  KPLHeaderKeyProtectedKey,
+  KPLHeaderKeyStartBytes,
+  KPLHeaderKeyRandomStreamId
+};
+
+typedef NS_ENUM(NSUInteger, KPLCompression) {
+  KPLCompressionNone,
+  KPLCompressionGzip,
+  KPLCompressionCount,
+};
+
 #define HEADER_EOH             0
 #define HEADER_COMMENT         1
 #define HEADER_CIPHERID        2
