@@ -357,7 +357,7 @@
 }
 
 - (NSString *)persistUuid:(UUID *)uuid {
-  NSData *data = [NSMutableData mutableDataWithEncodedData:[uuid getData]];
+  NSData *data = [NSMutableData mutableDataWithBase64EncodedData:[uuid getData]];
   return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
 
@@ -371,7 +371,7 @@
     [randomStream xor:mutableData];
     
     // Base64 encode the string
-    NSData *data = [NSMutableData mutableDataWithEncodedData:mutableData];
+    NSData *data = [NSMutableData mutableDataWithBase64EncodedData:mutableData];
     
     NSString *protected = [[NSString alloc] initWithBytes:data.bytes length:data.length encoding:NSUTF8StringEncoding];
     [root setStringValue:protected];

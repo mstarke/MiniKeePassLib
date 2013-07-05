@@ -31,13 +31,13 @@ static NSData *base64helper(NSData *input, SecTransformRef transform)
 @implementation NSMutableData (Base64)
 
 
-+ (NSMutableData *)mutableDataWithEncodedData:(NSData *)inputData {
++ (NSMutableData *)mutableDataWithBase64EncodedData:(NSData *)inputData {
   SecTransformRef transform = SecEncodeTransformCreate(kSecBase64Encoding, NULL);
 
   return [[NSMutableData alloc] initWithData:base64helper(inputData, transform)];
 }
 
-+ (NSMutableData *)mutableDataWithDecodedData:(NSData *)inputData {
++ (NSMutableData *)mutableDataWithBase64DecodedData:(NSData *)inputData {
   SecTransformRef transform = SecDecodeTransformCreate(kSecBase64Encoding, NULL);
   return [[NSMutableData  alloc] initWithData:base64helper(inputData, transform)];
 }

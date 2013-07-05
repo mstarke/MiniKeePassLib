@@ -120,7 +120,7 @@ int closeCallback(void *context) {
     NSString *str = [root stringValue];
     
     // Base64 decode the string
-    NSMutableData *data = [NSMutableData mutableDataWithDecodedData:[str dataUsingEncoding:NSASCIIStringEncoding]];
+    NSMutableData *data = [NSMutableData mutableDataWithBase64DecodedData:[str dataUsingEncoding:NSASCIIStringEncoding]];
     
     // Unprotect the password
     [randomStream xor:data];
@@ -367,7 +367,7 @@ int closeCallback(void *context) {
     return nil;
   }
   
-  NSData *data = [NSMutableData mutableDataWithDecodedData:[uuidString dataUsingEncoding:NSUTF8StringEncoding]];
+  NSData *data = [NSMutableData mutableDataWithBase64DecodedData:[uuidString dataUsingEncoding:NSUTF8StringEncoding]];
   return [[UUID alloc] initWithData:data];
 }
 

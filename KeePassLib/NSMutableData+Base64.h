@@ -14,7 +14,7 @@
 
 @interface NSMutableData (Base64)
 
-+ (NSMutableData*)mutableDataWithEncodedData:(NSData*)inputData;
-+ (NSMutableData*)mutableDataWithDecodedData:(NSData*)inputData;
++ (NSMutableData*)mutableDataWithBase64EncodedData:(NSData*)inputData;
++ (NSMutableData*)mutableDataWithBase64DecodedData:(NSData*)inputData;
 
 @end

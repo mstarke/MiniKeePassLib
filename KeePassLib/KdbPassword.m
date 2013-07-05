@@ -225,7 +225,7 @@ int hex2dec(char c);
     @throw [NSException exceptionWithName:@"ParseError" reason:@"Failed to parse keyfile" userInfo:nil];
   }
   
-  return [NSMutableData mutableDataWithDecodedData:[dataString dataUsingEncoding:NSASCIIStringEncoding]];
+  return [NSMutableData mutableDataWithBase64DecodedData:[dataString dataUsingEncoding:NSASCIIStringEncoding]];
 }
 
 - (NSData *)keyDataWithHexString:(NSString *)hexString {
