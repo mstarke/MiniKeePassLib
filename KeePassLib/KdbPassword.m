@@ -29,8 +29,6 @@
 - (NSData*)loadXmlKeyFile:(NSURL *)fileURL;
 @end
 
-int hex2dec(char c);
-
 @implementation KdbPassword
 
 - (id)initWithPassword:(NSString*)inPassword

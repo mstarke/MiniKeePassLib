@@ -49,16 +49,6 @@
   return self;
 }
 
-int	readCallback(void *context, char *buffer, int len) {
-  //FIXME: Check for correct ownershipt transferal
-  InputStream *inputStream = (InputStream*)CFBridgingRelease(context);
-  return (int)[inputStream read:buffer length:len];
-}
-
-int closeCallback(void *context) {
-  return 0;
-}
-
 - (Kdb4Tree *)parse:(InputStream *)inputStream error:(NSError **)error {
   NSMutableData *streamData = [[NSMutableData alloc] init];
   while(YES) {
