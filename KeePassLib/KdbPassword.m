@@ -13,6 +13,7 @@
 #import "DDXML.h"
 #import "DDXMLElementAdditions.h"
 #import "NSMutableData+Base64.h"
+#import "NSString+Hexdata.h"
 
 @interface KdbPassword ()
 
@@ -170,7 +171,7 @@
     error = nil;
     NSString *hexstring = [[NSString alloc] initWithData:fileData encoding:NSUTF8StringEncoding];
     if(!error && hexstring != nil) {
-      decordedData = [self keyDataWithHexString:hexstring];
+      decordedData = [hexstring dataFromHexString];
     }
   }
   if(!decordedData) {
@@ -224,34 +225,6 @@
   }
   
   return [NSMutableData mutableDataWithBase64DecodedData:[dataString dataUsingEncoding:NSASCIIStringEncoding]];
-}
-
-- (NSData *)keyDataWithHexString:(NSString *)hexString {
-  uint8_t buffer[32];
-  
-  if(hexString == nil) {
-    return nil;
-  }
-  if([hexString length] != 64) {
-    return nil; // No valid lenght found
-  }
-  BOOL scanOk = YES;
-  @autoreleasepool {
-    for(NSUInteger iIndex = 0; iIndex < 32; iIndex++) {
-      NSString *split = [hexString substringWithRange:NSMakeRange(iIndex * 2, 2)];
-      NSScanner * scanner = [NSScanner scannerWithString:split];
-      uint32_t integer = 0;
-      if(![scanner scanHexInt:&integer]) {
-        scanOk = NO;
-        break;
-      }
-      buffer[iIndex] = (uint8_t)integer;
-    }
-  }
-  if(!scanOk) {
-    return nil; // Hex scanning failed
-  }
-  return [NSData dataWithBytes:buffer length:32];
 }
 
 - (NSData *)keyDataFromHash:(NSData *)fileData {
