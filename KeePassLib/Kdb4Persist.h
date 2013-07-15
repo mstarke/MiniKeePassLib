@@ -29,5 +29,6 @@
 
 - (id)initWithTree:(Kdb4Tree*)tree outputStream:(OutputStream*)stream randomStream:(RandomStream*)cryptoRandomStream;
 - (void)persist;
+- (void)persistWithOptions:(NSUInteger)options;
 
 @end

@@ -50,6 +50,10 @@
 }
 
 - (void)persist {
+  [self persistWithOptions:DDXMLNodeCompactEmptyElement];
+}
+
+- (void)persistWithOptions:(NSUInteger)options {
   // Update the DOM model
   DDXMLDocument *document = [self persistTree];
   
@@ -57,7 +61,7 @@
   [self encodeProtected:document.rootElement];
   
   // Serialize the DOM to XML
-  [outputStream write:[document XMLDataWithOptions:DDXMLNodeCompactEmptyElement]];
+  [outputStream write:[document XMLDataWithOptions:options]];
 }
 
 - (DDXMLDocument *)persistTree {
