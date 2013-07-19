@@ -10,6 +10,7 @@
 
 @interface NSString (Empty)
 
++ (BOOL)isEmptyString:(NSString *)string;
 - (BOOL)isEmpty;
 
 @end

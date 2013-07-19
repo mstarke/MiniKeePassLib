@@ -198,7 +198,7 @@
   tmp32 = CFSwapInt32HostToLittle(group.groupId);
   [self appendField:1 size:4 bytes:&tmp32 withOutputStream:outputStream];
   
-  if (![group.name isEmpty]){
+  if (![NSString isEmptyString:group.name]){
     const char * title = [group.name cStringUsingEncoding:NSUTF8StringEncoding];
     [self appendField:2 size:(uint32_t)(strlen(title)+1) bytes:(void *)title withOutputStream:outputStream];
   }
@@ -249,31 +249,31 @@
   [self appendField:3 size:4 bytes:&tmp32 withOutputStream:outputStream];
   
   tmpStr = "";
-  if (![entry.title isEmpty]) {
+  if (![NSString isEmptyString:entry.title]) {
     tmpStr = [entry.title cStringUsingEncoding:NSUTF8StringEncoding];
   }
   [self appendField:4 size:(uint32_t)(strlen(tmpStr) + 1) bytes:tmpStr withOutputStream:outputStream];
   
   tmpStr = "";
-  if (![entry.url isEmpty]) {
+  if (![NSString isEmptyString:entry.url]) {
     tmpStr = [entry.url cStringUsingEncoding:NSUTF8StringEncoding];
   }
   [self appendField:5 size:(uint32_t)(strlen(tmpStr) + 1) bytes:tmpStr withOutputStream:outputStream];
   
   tmpStr = "";
-  if (![entry.username isEmpty]) {
+  if (![NSString isEmptyString:entry.username]) {
     tmpStr = [entry.username cStringUsingEncoding:NSUTF8StringEncoding];
   }
   [self appendField:6 size:(uint32_t)(strlen(tmpStr) + 1) bytes:tmpStr withOutputStream:outputStream];
   
   tmpStr = "";
-  if (![entry.password isEmpty]) {
+  if (![NSString isEmptyString:entry.password]) {
     tmpStr = [entry.password cStringUsingEncoding:NSUTF8StringEncoding];
   }
   [self appendField:7 size:(uint32_t)(strlen(tmpStr) + 1) bytes:tmpStr withOutputStream:outputStream];
   
   tmpStr = "";
-  if (![entry.notes isEmpty]) {
+  if (![NSString isEmptyString:entry.notes]) {
     tmpStr = [entry.notes cStringUsingEncoding:NSUTF8StringEncoding];
   }
   [self appendField:8 size:(uint32_t)(strlen(tmpStr) + 1) bytes:tmpStr withOutputStream:outputStream];
@@ -291,7 +291,7 @@
   [self appendField:12 size:5 bytes:buffer withOutputStream:outputStream];
   
   tmpStr = "";
-  if (![entry.binaryDesc isEmpty]) {
+  if (![NSString isEmptyString:entry.binaryDesc]) {
     tmpStr = [entry.binaryDesc cStringUsingEncoding:NSUTF8StringEncoding];
   }
   [self appendField:13 size:(uint32_t)(strlen(tmpStr) + 1) bytes:tmpStr withOutputStream:outputStream];
