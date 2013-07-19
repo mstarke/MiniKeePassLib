@@ -276,7 +276,7 @@
   
   for (DDXMLElement *element in [root elementsForName:@"String"]) {
     StringField *stringField = [self parseStringField:element];
-    
+    stringField.entry = entry;
     if ([stringField.key isEqualToString:FIELD_TITLE]) {
       entry.titleStringField = stringField;
     } else if ([stringField.key isEqualToString:FIELD_USER_NAME]) {

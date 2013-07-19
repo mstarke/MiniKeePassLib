@@ -70,6 +70,8 @@ typedef NS_ENUM(NSUInteger, KPLCompression) {
 #define FIELD_URL              @"URL"
 #define FIELD_NOTES            @"Notes"
 
+@class Kdb4Entry;
+
 @interface Kdb4Group : KdbGroup
 
 @property(nonatomic, strong) UUID *uuid;
@@ -91,6 +93,7 @@ typedef NS_ENUM(NSUInteger, KPLCompression) {
 @property(nonatomic, copy) NSString *key;
 @property(nonatomic, copy) NSString *value;
 @property(nonatomic, assign) BOOL protected;
+@property(nonatomic, weak) Kdb4Entry *entry;
 
 - (id)initWithKey:(NSString *)key andValue:(NSString *)value;
 - (id)initWithKey:(NSString *)key andValue:(NSString *)value andProtected:(BOOL)protected;

@@ -25,26 +25,26 @@
 @implementation StringField
 
 - (id)initWithKey:(NSString *)key andValue:(NSString *)value {
-    return [self initWithKey:key andValue:value andProtected:NO];
+  return [self initWithKey:key andValue:value andProtected:NO];
 }
 
 - (id)initWithKey:(NSString *)key andValue:(NSString *)value andProtected:(BOOL)protected {
-    self = [super init];
-    if (self) {
-        _key = [key copy];
-        _value = [value copy];
-        _protected = protected;
-    }
-    return self;
+  self = [super init];
+  if (self) {
+    _key = [key copy];
+    _value = [value copy];
+    _protected = protected;
+  }
+  return self;
 }
 
 + (id)stringFieldWithKey:(NSString *)key andValue:(NSString *)value {
-    return [[StringField alloc] initWithKey:key andValue:value];
+  return [[StringField alloc] initWithKey:key andValue:value];
 }
 
 
 - (id)copyWithZone:(NSZone *)zone {
-    return [[StringField alloc] initWithKey:self.key andValue:self.value andProtected:self.protected];
+  return [[StringField alloc] initWithKey:self.key andValue:self.value andProtected:self.protected];
 }
 
 @end
@@ -78,11 +78,11 @@
 @implementation AutoType
 
 - (id)init {
-    self = [super init];
-    if (self) {
-        _associations = [[NSMutableArray alloc] init];
-    }
-    return self;
+  self = [super init];
+  if (self) {
+    _associations = [[NSMutableArray alloc] init];
+  }
+  return self;
 }
 
 @end
@@ -91,53 +91,53 @@
 @implementation Kdb4Entry
 
 - (id)init {
-    self = [super init];
-    if (self) {
-        _stringFields = [[NSMutableArray alloc] init];
-        _binaries = [[NSMutableArray alloc] init];
-        _history = [[NSMutableArray alloc] init];
-    }
-    return self;
+  self = [super init];
+  if (self) {
+    _stringFields = [[NSMutableArray alloc] init];
+    _binaries = [[NSMutableArray alloc] init];
+    _history = [[NSMutableArray alloc] init];
+  }
+  return self;
 }
 
 - (NSString *)title {
-    return _titleStringField.value;
+  return _titleStringField.value;
 }
 
 - (void)setTitle:(NSString *)title {
-    _titleStringField.value = title;
+  _titleStringField.value = title;
 }
 
 - (NSString *)username {
-    return _usernameStringField.value;
+  return _usernameStringField.value;
 }
 
 - (void)setUsername:(NSString *)username {
-    _usernameStringField.value = username;
+  _usernameStringField.value = username;
 }
 
 - (NSString *)password {
-    return _passwordStringField.value;
+  return _passwordStringField.value;
 }
 
 - (void)setPassword:(NSString *)password {
-    _passwordStringField.value = password;
+  _passwordStringField.value = password;
 }
 
 - (NSString *)url {
-    return _urlStringField.value;
+  return _urlStringField.value;
 }
 
 - (void)setUrl:(NSString *)url {
-    _urlStringField.value = url;
+  _urlStringField.value = url;
 }
 
 - (NSString *)notes {
-    return _notesStringField.value;
+  return _notesStringField.value;
 }
 
 - (void)setNotes:(NSString *)notes {
-    _notesStringField.value = notes;
+  _notesStringField.value = notes;
 }
 
 @end
@@ -146,15 +146,15 @@
 @implementation Kdb4Tree
 
 - (id)init {
-    self = [super init];
-    if (self) {
-        _rounds = DEFAULT_TRANSFORMATION_ROUNDS;
-        _compressionAlgorithm = COMPRESSION_GZIP;
-        _customIcons = [[NSMutableArray alloc] init];
-        _binaries = [[NSMutableArray alloc] init];
-        _customData = [[NSMutableArray alloc] init];
-    }
-    return self;
+  self = [super init];
+  if (self) {
+    _rounds = DEFAULT_TRANSFORMATION_ROUNDS;
+    _compressionAlgorithm = COMPRESSION_GZIP;
+    _customIcons = [[NSMutableArray alloc] init];
+    _binaries = [[NSMutableArray alloc] init];
+    _customData = [[NSMutableArray alloc] init];
+  }
+  return self;
 }
 
 - (void)setDatabaseDescription:(NSString *)databaseDescription {
@@ -172,64 +172,69 @@
 }
 
 - (KdbGroup*)createGroup:(KdbGroup*)parent {
-    Kdb4Group *group = [[Kdb4Group alloc] init];
-
-    group.uuid = [UUID uuid];
-    group.Notes = @"";
-    group.image = 0;
-    group.isExpanded = true;
-    group.defaultAutoTypeSequence = @"";
-    group.enableAutoType = @"null";
-    group.enableSearching = @"null";
-    group.lastTopVisibleEntry = [UUID nullUuid];
-
-    NSDate *currentTime = [NSDate date];
-    group.lastModificationTime = currentTime;
-    group.creationTime = currentTime;
-    group.lastAccessTime = currentTime;
-    group.expiryTime = currentTime;
-    group.expires = false;
-    group.usageCount = 0;
-    group.locationChanged = currentTime;
-
-    return group;
+  Kdb4Group *group = [[Kdb4Group alloc] init];
+  
+  group.uuid = [UUID uuid];
+  group.Notes = @"";
+  group.image = 0;
+  group.isExpanded = true;
+  group.defaultAutoTypeSequence = @"";
+  group.enableAutoType = @"null";
+  group.enableSearching = @"null";
+  group.lastTopVisibleEntry = [UUID nullUuid];
+  
+  NSDate *currentTime = [NSDate date];
+  group.lastModificationTime = currentTime;
+  group.creationTime = currentTime;
+  group.lastAccessTime = currentTime;
+  group.expiryTime = currentTime;
+  group.expires = false;
+  group.usageCount = 0;
+  group.locationChanged = currentTime;
+  
+  return group;
 }
 
 - (KdbEntry*)createEntry:(KdbGroup*)parent {
-    Kdb4Entry *entry = [[Kdb4Entry alloc] init];
-
-    entry.uuid = [UUID uuid];
-    entry.image = 0;
-    entry.titleStringField = [[StringField alloc] initWithKey:FIELD_TITLE andValue:@"New Entry"];
-    entry.usernameStringField = [[StringField alloc] initWithKey:FIELD_USER_NAME andValue:@""];
-    entry.passwordStringField = [[StringField alloc] initWithKey:FIELD_PASSWORD andValue:@"" andProtected:YES];
-    entry.urlStringField = [[StringField alloc] initWithKey:FIELD_URL andValue:@""];
-    entry.notesStringField = [[StringField alloc] initWithKey:FIELD_NOTES andValue:@""];
-    entry.foregroundColor = @"";
-    entry.backgroundColor = @"";
-    entry.overrideUrl = @"";
-    entry.tags = @"";
-
-    NSDate *currentTime = [NSDate date];
-    entry.lastModificationTime = currentTime;
-    entry.creationTime = currentTime;
-    entry.lastAccessTime = currentTime;
-    entry.expiryTime = currentTime;
-    entry.expires = false;
-    entry.usageCount = 0;
-    entry.locationChanged = currentTime;
-
-    // Add a default AutoType object
-    entry.autoType = [[AutoType alloc] init];
-    entry.autoType.enabled = YES;
-    entry.autoType.dataTransferObfuscation = 1;
-
-    Association *association = [[Association alloc] init];
-    association.window = @"Target Window";
-    association.keystrokeSequence = @"{USERNAME}{TAB}{PASSWORD}{TAB}{ENTER}";
-    [entry.autoType.associations addObject:association];
-
-    return entry;
+  Kdb4Entry *entry = [[Kdb4Entry alloc] init];
+  
+  entry.uuid = [UUID uuid];
+  entry.image = 0;
+  entry.titleStringField = [[StringField alloc] initWithKey:FIELD_TITLE andValue:@"New Entry"];
+  entry.titleStringField.entry = entry  ;
+  entry.usernameStringField = [[StringField alloc] initWithKey:FIELD_USER_NAME andValue:@""];
+  entry.usernameStringField.entry = entry;
+  entry.passwordStringField = [[StringField alloc] initWithKey:FIELD_PASSWORD andValue:@"" andProtected:YES];
+  entry.passwordStringField.entry = entry;
+  entry.urlStringField = [[StringField alloc] initWithKey:FIELD_URL andValue:@""];
+  entry.urlStringField.entry = entry;
+  entry.notesStringField = [[StringField alloc] initWithKey:FIELD_NOTES andValue:@""];
+  entry.notesStringField.entry = entry;
+  entry.foregroundColor = @"";
+  entry.backgroundColor = @"";
+  entry.overrideUrl = @"";
+  entry.tags = @"";
+  
+  NSDate *currentTime = [NSDate date];
+  entry.lastModificationTime = currentTime;
+  entry.creationTime = currentTime;
+  entry.lastAccessTime = currentTime;
+  entry.expiryTime = currentTime;
+  entry.expires = false;
+  entry.usageCount = 0;
+  entry.locationChanged = currentTime;
+  
+  // Add a default AutoType object
+  entry.autoType = [[AutoType alloc] init];
+  entry.autoType.enabled = YES;
+  entry.autoType.dataTransferObfuscation = 1;
+  
+  Association *association = [[Association alloc] init];
+  association.window = @"Target Window";
+  association.keystrokeSequence = @"{USERNAME}{TAB}{PASSWORD}{TAB}{ENTER}";
+  [entry.autoType.associations addObject:association];
+  
+  return entry;
 }
 
 @end
