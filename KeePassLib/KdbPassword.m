@@ -224,7 +224,7 @@
     @throw [NSException exceptionWithName:@"ParseError" reason:@"Failed to parse keyfile" userInfo:nil];
   }
   
-  return [NSMutableData mutableDataWithBase64DecodedData:[dataString dataUsingEncoding:NSASCIIStringEncoding]];
+  return [NSMutableData mutableDataWithBase64DecodedData:[dataString dataUsingEncoding:NSUTF8StringEncoding]];
 }
 
 - (NSData *)keyDataFromHash:(NSData *)fileData {

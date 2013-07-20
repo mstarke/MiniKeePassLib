@@ -42,4 +42,14 @@ static NSData *base64helper(NSData *input, SecTransformRef transform)
   return [[NSMutableData  alloc] initWithData:base64helper(inputData, transform)];
 }
 
+- (void)encodeBase64 {
+  SecTransformRef transform = SecEncodeTransformCreate(kSecBase64Encoding, NULL);
+  [self setData:base64helper(self, transform)];
+}
+
+- (void)decodeBase64 {
+  SecTransformRef transform = SecDecodeTransformCreate(kSecBase64Encoding, NULL);
+  [self setData:base64helper(self, transform)];
+}
+
 @end

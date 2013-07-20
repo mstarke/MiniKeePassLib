@@ -110,7 +110,7 @@
     NSString *str = [root stringValue];
     
     // Base64 decode the string
-    NSMutableData *data = [NSMutableData mutableDataWithBase64DecodedData:[str dataUsingEncoding:NSASCIIStringEncoding]];
+    NSMutableData *data = [NSMutableData mutableDataWithBase64DecodedData:[str dataUsingEncoding:NSUTF8StringEncoding]];
     
     // Unprotect the password
     [randomStream xor:data];

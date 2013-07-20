@@ -16,5 +16,7 @@
 
 + (NSMutableData*)mutableDataWithBase64EncodedData:(NSData*)inputData;
 + (NSMutableData*)mutableDataWithBase64DecodedData:(NSData*)inputData;
+- (void)encodeBase64;
+- (void)decodeBase64;
 
 @end
