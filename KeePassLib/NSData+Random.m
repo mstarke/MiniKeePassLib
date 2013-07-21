@@ -11,7 +11,7 @@
 
 @implementation NSData (Random)
 
-+ (NSData *)dataWithRandomBytes:(uint32_t)length {
++ (NSData *)dataWithRandomBytes:(NSUInteger)length {
   uint8_t *bytes = malloc(sizeof(uint8_t) * length);
   SecRandomCopyBytes(kSecRandomDefault, length, bytes);
   return [NSData dataWithBytesNoCopy:bytes length:length freeWhenDone:YES];

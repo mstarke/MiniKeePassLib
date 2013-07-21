@@ -10,6 +10,6 @@
 
 @interface NSData (Random)
 
-+ (NSData *)dataWithRandomBytes:(uint32_t)length;
++ (NSData *)dataWithRandomBytes:(NSUInteger)length;
 
 @end
