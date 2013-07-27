@@ -52,4 +52,12 @@ static NSData *base64helper(NSData *input, SecTransformRef transform)
   [self setData:base64helper(self, transform)];
 }
 
++ (NSData *)dataFromBase64EncodedString:(NSString *)string {
+  NSMutableData *mutableData = [[string dataUsingEncoding:NSUTF8StringEncoding] mutableCopy];
+  [mutableData decodeBase64];
+  return mutableData;
+}
+
+
+
 @end

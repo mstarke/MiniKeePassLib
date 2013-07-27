@@ -19,4 +19,6 @@
 - (void)encodeBase64;
 - (void)decodeBase64;
 
++ (NSData *)dataFromBase64EncodedString:(NSString *)string;
+
 @end
