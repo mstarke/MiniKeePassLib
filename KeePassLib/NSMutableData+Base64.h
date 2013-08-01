@@ -12,13 +12,41 @@
 
 #import <Foundation/Foundation.h>
 
+/**
+ *	Support for Base64 Encoding and Decoding of mutable data objects
+ */
 @interface NSMutableData (Base64)
 
+/**
+ *	Encodes the profieded data as Base64
+ *	@param	inputData	data to be encoded
+ *	@return	data encoded with base64 encoding
+ */
 + (NSMutableData*)mutableDataWithBase64EncodedData:(NSData*)inputData;
+
+/**
+ *	Decodes the given base64 encoded data
+ *	@param	inputData	base64 encoded data to decode
+ *	@return	decoded data
+ */
 + (NSMutableData*)mutableDataWithBase64DecodedData:(NSData*)inputData;
+
+/**
+ *	Encoded the Data in place with base64 encoding
+ */
 - (void)encodeBase64;
+
+/**
+ *	Decodes the base64 encoded data in place
+ */
 - (void)decodeBase64;
 
-+ (NSData *)dataFromBase64EncodedString:(NSString *)string;
+/**
+ *	Extracts the data from an NSString object representing the base64 encoding of data
+ *	@param	string	the string that represents the base64 encoded data.
+ *	@param	encoding	the encoding to use for the string
+ *	@return	base64 encoded data.
+ */
++ (NSData *)dataFromBase64EncodedString:(NSString *)string encoding:(NSStringEncoding)encoding;
 
 @end
