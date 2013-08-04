@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+@class UUID;
 
 #define DEFAULT_TRANSFORMATION_ROUNDS 6000
 
@@ -44,8 +45,8 @@
 @end
 
 @interface KdbEntry : NSObject 
+@property(nonatomic, strong) UUID *uuid;
 @property(nonatomic, weak) KdbGroup *parent;
-
 @property(nonatomic, assign) NSInteger image;
 
 - (NSString *)title;

@@ -156,7 +156,6 @@ typedef NS_ENUM(NSUInteger, KPLCompression) {
 
 @interface Kdb4Entry : KdbEntry
 
-@property(nonatomic, strong) UUID *uuid;
 @property(nonatomic, strong) StringField *titleStringField;
 @property(nonatomic, strong) StringField *usernameStringField;
 @property(nonatomic, strong) StringField *passwordStringField;
