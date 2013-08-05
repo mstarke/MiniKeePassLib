@@ -13,14 +13,18 @@
 @implementation NSString (Hexdata)
 
 - (NSData *)dataFromHexString {
+  NSString *string = [self copy];
+  if([string hasPrefix:@"0x"]) {
+    string = [self substringFromIndex:2];
+  }
   NSCharacterSet *hexCharactes = [[NSCharacterSet characterSetWithCharactersInString:@"0123456789AaBbCcDdEeFf"] invertedSet];
-  BOOL isValid = (NSNotFound == [self rangeOfCharacterFromSet:hexCharactes].location);
+  BOOL isValid = (NSNotFound == [string rangeOfCharacterFromSet:hexCharactes].location);
   if(!isValid) {
     return nil;
   }
-  const char *chars = [self UTF8String];
+  const char *chars = [string UTF8String];
   NSUInteger index = 0;
-  NSUInteger length = self.length;
+  NSUInteger length = [string length];
   
   NSMutableData *data = [NSMutableData dataWithCapacity:length / 2];
   char byteChars[3] = {'\0','\0','\0'};
