@@ -13,7 +13,7 @@
 @implementation NSString (Hexdata)
 
 - (NSData *)dataFromHexString {
-  NSCharacterSet *hexCharactes = [[NSCharacterSet characterSetWithCharactersInString:@"0123456789ABCDEF"] invertedSet];
+  NSCharacterSet *hexCharactes = [[NSCharacterSet characterSetWithCharactersInString:@"0123456789AaBbCcDdEeFf"] invertedSet];
   BOOL isValid = (NSNotFound == [self rangeOfCharacterFromSet:hexCharactes].location);
   if(!isValid) {
     return nil;
