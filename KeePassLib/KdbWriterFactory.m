@@ -32,7 +32,7 @@
     writer = [[Kdb4Writer alloc] init];
   }
   else {
-    NSDictionary *userInfo = @{ NSLocalizedDescriptionKey : NSLocalizedStringFromTable( @"ERROR_TREE_CLASS_NOT_RECOGNIZED", @"Errors", @"Database is of unknown type" ) };
+    NSDictionary *userInfo = @{ NSLocalizedDescriptionKey : NSLocalizedString( @"ERROR_TREE_CLASS_NOT_RECOGNIZED", "Database is of unknown type" ) };
     *error = [NSError errorWithDomain:NSCocoaErrorDomain code:KPLErrorUnknownFileFormat userInfo:userInfo];
     return NO;
   }
@@ -40,7 +40,7 @@
     [writer persist:tree fileURL:fileURL withPassword:kdbPassword error:error];
   }
   @catch (NSException *exception) {
-    NSDictionary *userInfo = @{ NSLocalizedDescriptionKey : NSLocalizedStringFromTable(@"ERROR_PERSIST_FAILED", @"Errors", @"Failed to write the database") };
+    NSDictionary *userInfo = @{ NSLocalizedDescriptionKey : NSLocalizedString(@"ERROR_PERSIST_FAILED", "Failed to write the database") };
     *error = [NSError errorWithDomain:0 code:KPLErrorWriteFailed userInfo:userInfo];
   }
   @finally {

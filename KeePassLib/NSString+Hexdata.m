@@ -12,6 +12,16 @@
 
 @implementation NSString (Hexdata)
 
++ (NSString *)hexstringFromData:(NSData *)data {
+  NSMutableString *hexString = [[NSMutableString alloc] initWithCapacity:[data length] * 2];
+  uint8_t byte;
+  for(NSInteger byteIndex = 0; byteIndex < [data length]; byteIndex++) {
+    [data getBytes:&byte range:NSMakeRange(byteIndex, 1)];
+    [hexString appendFormat:@"%02x", byte];
+  }
+  return hexString;
+}
+
 - (NSData *)dataFromHexString {
   NSString *string = [self copy];
   if([string hasPrefix:@"0x"]) {
