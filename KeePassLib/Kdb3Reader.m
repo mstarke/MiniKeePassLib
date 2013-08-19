@@ -163,7 +163,6 @@ typedef NS_ENUM(NSUInteger, MPFieldType) {
       
       switch (fieldType) {
         case FieldTypeCommonSize:
-          //case 0x0000:
           if (fieldSize > 0) {
             [self readExtData:inputStream];
           }
