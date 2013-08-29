@@ -203,16 +203,16 @@
     [self appendField:2 size:(uint32_t)(strlen(title)+1) bytes:(void *)title withOutputStream:outputStream];
   }
   
-  [group.creationTime packToBytes:packedDate];
+  [NSDate getPackedBytes:packedDate fromDate:group.creationTime];
   [self appendField:3 size:5 bytes:packedDate withOutputStream:outputStream];
   
-  [group.lastModificationTime packToBytes:packedDate];
+  [NSDate getPackedBytes:packedDate fromDate:group.lastModificationTime];
   [self appendField:4 size:5 bytes:packedDate withOutputStream:outputStream];
   
-  [group.lastAccessTime packToBytes:packedDate];
+  [NSDate getPackedBytes:packedDate fromDate:group.lastAccessTime];
   [self appendField:5 size:5 bytes:packedDate withOutputStream:outputStream];
   
-  [group.expiryTime packToBytes:packedDate];
+  [NSDate getPackedBytes:packedDate fromDate:group.expiryTime];
   [self appendField:6 size:5 bytes:packedDate withOutputStream:outputStream];
   
   tmp32 = CFSwapInt32HostToLittle((uint32_t)group.image);
@@ -278,16 +278,16 @@
   }
   [self appendField:8 size:(uint32_t)(strlen(tmpStr) + 1) bytes:tmpStr withOutputStream:outputStream];
   
-  [entry.creationTime packToBytes:buffer];
+  [NSDate getPackedBytes:buffer fromDate:entry.creationTime];
   [self appendField:9 size:5 bytes:buffer withOutputStream:outputStream];
   
-  [entry.lastModificationTime packToBytes:buffer];
+  [NSDate getPackedBytes:buffer fromDate:entry.lastModificationTime];
   [self appendField:10 size:5 bytes:buffer withOutputStream:outputStream];
   
-  [entry.lastAccessTime packToBytes:buffer];
+  [NSDate getPackedBytes:buffer fromDate:entry.lastAccessTime];
   [self appendField:11 size:5 bytes:buffer withOutputStream:outputStream];
   
-  [entry.expiryTime packToBytes:buffer];
+  [NSDate getPackedBytes:buffer fromDate:entry.expiryTime];
   [self appendField:12 size:5 bytes:buffer withOutputStream:outputStream];
   
   tmpStr = "";

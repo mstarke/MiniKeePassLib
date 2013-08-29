@@ -10,7 +10,8 @@
 
 @interface NSDate (Packed)
 
-+ (NSDate*)dateFromPackedBytes:(uint8_t *)buffer;
-- (void)packToBytes:(uint8_t*)bytes;
++ (NSDate *)dateFromPackedBytes:(uint8_t *)buffer;
++ (NSData *)packedBytesFromDate:(NSDate *)date;
++ (void)getPackedBytes:(uint8_t *)buffer fromDate:(NSDate *)date;
 
 @end

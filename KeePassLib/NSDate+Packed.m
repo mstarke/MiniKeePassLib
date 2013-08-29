@@ -10,7 +10,7 @@
 
 @implementation NSDate (Packed)
 
-+ (NSDate*)dateFromPackedBytes:(uint8_t *)buffer {
++ (NSDate *)dateFromPackedBytes:(uint8_t *)buffer {
   uint32_t dw1, dw2, dw3, dw4, dw5;
   dw1 = (uint32_t)buffer[0]; dw2 = (uint32_t)buffer[1]; dw3 = (uint32_t)buffer[2];
   dw4 = (uint32_t)buffer[3]; dw5 = (uint32_t)buffer[4];
@@ -39,7 +39,13 @@
   return date;
 }
 
-- (void)packToBytes:(uint8_t*)bytes {
++ (void)getPackedBytes:(uint8_t *)buffer fromDate:(NSDate *)date {
+  NSData *data = [self packedBytesFromDate:date];
+  [data getBytes:buffer length:[data length]];
+}
+
++ (NSData *)packedBytesFromDate:(NSDate *)date {
+  
   uint32_t year;
   uint32_t month;
   uint32_t days;
@@ -47,9 +53,10 @@
   uint32_t minutes;
   uint32_t seconds;
   
-  if(self) {
+  if(date) {
     NSCalendar *calendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
-    NSDateComponents *dateComponents = [calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit | NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit) fromDate:self];
+    NSUInteger calendarComponents = (NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit | NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit);
+    NSDateComponents *dateComponents = [calendar components:calendarComponents fromDate:date];
     
     year = (uint32_t)[dateComponents year];
     month = (uint32_t)[dateComponents month];
@@ -66,12 +73,14 @@
     minutes = 59;
     seconds = 59;
   }
+  uint8_t byteBuffer[5];
+  byteBuffer[0] = (uint8_t)((year >> 6) & 0x0000003F);
+  byteBuffer[1] = (uint8_t)(((year & 0x0000003F) << 2) | ((month >> 2) & 0x00000003));
+  byteBuffer[2] = (uint8_t)(((month & 0x00000003) << 6) | ((days & 0x0000001F) << 1) | ((hours >> 4) & 0x00000001));
+  byteBuffer[3] = (uint8_t)(((hours & 0x0000000F) << 4) | ((minutes >> 2) & 0x0000000F));
+  byteBuffer[4] = (uint8_t)(((minutes & 0x00000003) << 6) | (seconds & 0x0000003F));
   
-  bytes[0] = (uint8_t)((year >> 6) & 0x0000003F);
-  bytes[1] = (uint8_t)(((year & 0x0000003F) << 2) | ((month >> 2) & 0x00000003));
-  bytes[2] = (uint8_t)(((month & 0x00000003) << 6) | ((days & 0x0000001F) << 1) | ((hours >> 4) & 0x00000001));
-  bytes[3] = (uint8_t)(((hours & 0x0000000F) << 4) | ((minutes >> 2) & 0x0000000F));
-  bytes[4] = (uint8_t)(((minutes & 0x00000003) << 6) | (seconds & 0x0000003F));
+  return [NSData dataWithBytes:byteBuffer length:sizeof(byteBuffer)];
 }
 
 @end
